@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h2>Lost Password</h2>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  <form action="{{ url_for('lost_password') }}" method=post>
+    <dl>
+      <dt>Account Recovery Email Address:
+      <dd><input type=text name=email required>
+      <dd><input type=submit value="Send Email">
+    </dl>
+  </form>
+{% endblock %}

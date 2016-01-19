@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block title %}New Account | {% endblock %}
+{% block body %}
+  <h2>New Account</h2>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  <form action="{{ url_for('add_user') }}" method=post>
+    <dl>
+        <dt>Username:
+        <dd><input type=text name=username required>
+        <dt>Password:
+        <dd><input type=password name=password required>
+        <dt>Re-Enter Password:
+        <dd><input type=password name=repassword required>
+        <dt>Recovery Email Address:
+        <dd><input type=text name=email required>
+        <dt>Re-enter ecovery Email Address:
+        <dd><input type=text name=reemail required>
+
+      <dd><input type=submit value="Add User">
+    </dl>
+  </form>
+{% endblock %}
