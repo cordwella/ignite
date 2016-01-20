@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block title %}{{ house.name }}  | {% endblock %}
+{% block body %}
+    <h2>{{ house.name }}</h2>
+    {{ house.desc }}
+    <br>
+    <h3> Recent Scans: </h3>
+    {{  recent_scans(column="house", wid=house.id)|safe  }}
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block title %}User Profile: {{ user.uname }}  | {% endblock %}
+{% block body %}
+    <h2>{{ user.uname }}</h2>
+    <a href="{{ url_for('show_house', house_id=user.house_id)}}">{{ user.name }}</a>
+    <br>
+    Points: {{ user.points }}
+    <h3> Recent Scans: </h3>
+    {{  recent_scans(column="user", wid=user.id)|safe  }}
+{% endblock %}

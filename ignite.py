@@ -10,24 +10,7 @@ app.config.from_object(__name__)
 
 @app.route('/')
 def index():
-    data = query_db('select * from entries_with_author order by id desc')
-    entries = [dict(title=row['title'], text=row['entry'], author=row['username']) for row in data]
-    return render_template('show_entries.html', entries=entries)
-
-@app.route('/user/<int:user_id>')
-def show_user_profile(user_id):
-    # show the user profile for that user
-    return 'User %s' % user_id
-
-@app.route('/torch/<int:marker_id>')
-def show_marker(marker_id):
-    # show the user profile for that user
-    return 'Marker %s' % marker_id
-
-@app.route('/house/<int:house_id>')
-def show_house(house_id):
-    # show the user profile for that user
-    return 'House %s' % house_id
+    return render_template('index.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -107,15 +90,52 @@ def add_entry():
 def lost_password():
     if session.get('username'):
         return redirect(url_for('index'))
-    flash("testing password")
+    flash("Still working on it bro.")
     return redirect(url_for('login'))
+
+@app.route('/user/<int:user_id>')
+def show_user_profile(user_id):
+    # show the user profile for that user
+    user = query_db("SELECT * FROM users_with_house WHERE id = %s", [user_id])[0]
+    return render_template("user.html", user=user)
+
+@app.route('/torch/<int:marker_id>')
+def show_marker(marker_id):
+    # show the marker profile
+    marker = query_db("SELECT * FROM markers_with_houses WHERE id = %s", [marker_id])[0]
+    return render_template("marker.html", marker=marker)
+
+@app.route('/house/<int:house_id>')
+def show_house(house_id):
+    # show the user profile for that user
+    house = query_db("SELECT * FROM houses WHERE id = %s", [house_id])[0]
+    return render_template("house.html", house=house)
+
+@app.route('/scan/<scan_id>')
+def show_house(scan_id):
+    from hashids import Hashids
+    hashid = Hashids(min_length=6)
+    # show the user profile for that user
+    house = query_db("SELECT * FROM houses WHERE id = %s", [house_id])[0]
+    return render_template("house.html", house=house)
+
 
 ## Context Processors
 @app.context_processor
 def utility_processor():
-    def most_recent_scans(type, id, amount=20):
-        return "This is a list of the most recent scans"
-    return dict(format_price=format_price)
+    def recent_scans(column="all", wid=None, amount=20):
+        data = []
+        if(column == "user"):
+            data = query_db("SELECT * FROM scan_info WHERE user_id = %s order by scan_time asc limit 20", [wid])
+        elif(column == "house"):
+            data = query_db("SELECT * FROM scan_info WHERE uhouse_id = %s order by scan_time asc limit 20", [wid])
+        elif(column == "marker"):
+            data = query_db("SELECT * FROM scan_info WHERE marker_id = %s order by scan_time asc limit 20", [wid])
+        else:
+            data = query_db("SELECT * FROM scan_info order by scan_time asc limit 20")
+        return render_template("recent_scans.html", scans=data)
+
+    return dict(recent_scans=recent_scans)
 
 ## Error Handlers
 @app.errorhandler(404)

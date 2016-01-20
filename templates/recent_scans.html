@@ -1,0 +1,20 @@
+{% if scans %}
+<table class=scans border=1>
+    <tr>
+        <th> Time </th>
+        <th> Marker </th>
+        <th> User </th>
+        <th> Points </th>
+    </tr>
+    {% for scan in scans %}
+    <tr>
+        <td> {{ scan.scan_time }} </td>
+        <td class="marker-{{ scan.mhouse }}"> <a href="{{ url_for('show_marker', marker_id = scan.marker_id)}}">{{ scan.mname }} </a></td>
+        <td class="marker-{{ scan.uhouse }}"> <a href="{{ url_for('show_user_profile', user_id = scan.user_id)}}">{{ scan.uname }} </td>
+        <td> {{ scan.point_value }} </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<tr>Unbelievable! No scans yet.</tr>
+{% endif %}

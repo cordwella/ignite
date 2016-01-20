@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block title %}Marker: {{ marker.name }}  | {% endblock %}
+{% block body %}
+    <h2>{{ marker.name }}</h2>
+    {% if marker.house %}
+        <a href="{{ url_for('show_house', house_id=marker.house_id)}}">{{ marker.house }}</a>
+        <br>
+    {% endif %}
+    Point Value: {{ marker.point_value }}
+    <h3> Recent Scans: </h3>
+    {{  recent_scans(column="marker", wid=marker.id)|safe  }}
+{% endblock %}
