@@ -175,11 +175,11 @@ DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER update_points BEFORE INSERT ON scans FOR EACH ROW BEGIN
     IF ((SELECT house_id FROM users WHERE id = NEW.user_id)
      = (SELECT house_id FROM markers where id = NEW.marker_id)) THEN
-        SET NEW.points = (SELECT point_value from markers where id= new.marker_id)*2;
+        SET NEW.point_value = (SELECT point_value from markers where id= new.marker_id)*2;
     ELSE
-        SET NEW.points = (SELECT point_value from markers where id= new.marker_id);
+        SET NEW.point_value = (SELECT point_value from markers where id= new.marker_id);
     END IF;
- UPDATE users set points = points + NEW.points WHERE id = new.user_id;
+ UPDATE users set points = points + NEW.point_value WHERE id = new.user_id;
 
 END */;;
 DELIMITER ;

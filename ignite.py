@@ -1,6 +1,7 @@
 from flask import Flask, request, session, redirect, url_for, \
     abort, render_template, flash
 import MySQLdb
+from hashids import Hashids
 
 DEBUG = True
 SECRET_KEY = 'development key'
@@ -23,12 +24,12 @@ def login():
     if request.method == "POST":
         username = clean_str(request.form['username'])
         password = clean_str(request.form['password'])
-        data = query_db('SELECT * FROM users WHERE username = %s',[username])
+        data = query_db('SELECT * FROM users WHERE uname = %s',[username])
         if len(data) == 0:
             error = 'Invalid username'
-        elif data[0]['password'] == password:
+        elif data[0]['pword'] == password:
             session['username'] = username
-            session['user_id'] = query_db('SELECT id FROM users where username = %s',[username])[0]['id']
+            session['user_id'] = query_db('SELECT id FROM users where uname = %s',[username])[0]['id']
             flash('You were logged in')
             return redirect(url_for('index'))
         else:
@@ -44,20 +45,17 @@ def add_user():
     if request.method == "POST":
         username = request.form['username']
         password = clean_str(request.form['password'])
+        house_id = request.form['house']
         if not is_clean_username(username):
             error = "Username must contain only alpha-numeric characters, and must be between 5 and 12 characters"
-        elif password != request.form['repassword']:
-            error = "Passwords must match"
-        elif request.form['email'] != request.form['reemail']:
-            error = "Emails must match"
         elif not email_validate(request.form['email']):
             error = "Invalid Email Address"
         elif username and password: ## basically not null
             #return str(username) + " " + str(password)
             try:
-                data = query_db('INSERT INTO users(username, password) values(%s, %s, %s)',[username, password, request.form['email']])
+                data = query_db('INSERT INTO users(uname, pword, email, house_id) values(%s, %s, %s, %s)',[username, password, request.form['email'], house_id])
                 session['username'] = username
-                session['user_id'] = query_db('SELECT id FROM users where username = %s',[username])[0]['id']
+                session['user_id'] = query_db('SELECT id FROM users where uname = %s',[username])[0]['id']
                 flash('You were logged in')
                 return redirect(url_for('index'))
             except MySQLdb.Error, e:
@@ -67,7 +65,8 @@ def add_user():
                     error = "Database Error. %s %s" % (e.args[0], e.args[1])
         else:
             error = "Invalid Username Or Password"
-    return render_template('adduser.html', error=error)
+    houses = query_db("SELECT * FROM houses")
+    return render_template('adduser.html', error=error, houses=houses)
 
 
 @app.route('/logout')
@@ -75,15 +74,6 @@ def logout():
     session.pop('username', None)
     session.pop('user_id', None)
     flash('You were logged out')
-    return redirect(url_for('index'))
-
-@app.route('/add', methods=['POST'])
-def add_entry():
-    if not session.get('username'):
-        abort(401)
-    query_db('insert into entries (title, entry, user_id) values (%s, %s, %s)',
-                 [request.form['title'], request.form['text'], session['user_id']])
-    flash('New entry was successfully posted')
     return redirect(url_for('index'))
 
 @app.route('/forgotpass', methods=['GET','POST'])
@@ -112,12 +102,18 @@ def show_house(house_id):
     return render_template("house.html", house=house)
 
 @app.route('/scan/<scan_id>')
-def show_house(scan_id):
-    from hashids import Hashids
+def scan_marker(scan_id):
+    if not session.get('user_id'):
+        flash("Must be logged in to scan.")
+        return redirect(url_for("login"))
     hashid = Hashids(min_length=6)
+    marker_id = hashid.decode(scan_id)[0]
     # show the user profile for that user
-    house = query_db("SELECT * FROM houses WHERE id = %s", [house_id])[0]
-    return render_template("house.html", house=house)
+    try:
+        asas = query_db("INSERT INTO scans (user_id, marker_id) values(%s, %s)", [str(session.get('user_id')), str(marker_id)])
+    except MySQLdb.Error, e:
+        flash("Database Error. %s %s" % (e.args[0], e.args[1]))
+    return redirect(url_for("show_marker", marker_id=marker_id))
 
 
 ## Context Processors
@@ -190,6 +186,7 @@ def bad_password_check(s):
     return False
 
 def email_validate(s):
+    import re
     #[^@]+@[^@]+\.[^@]+
     return re.match("[^@]+@[^@]+\.[^@]+", s) and clean_str(s)
 

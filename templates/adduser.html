@@ -9,13 +9,12 @@
         <dd><input type=text name=username required>
         <dt>Password:
         <dd><input type=password name=password required>
-        <dt>Re-Enter Password:
-        <dd><input type=password name=repassword required>
         <dt>Recovery Email Address:
         <dd><input type=text name=email required>
-        <dt>Re-enter ecovery Email Address:
-        <dd><input type=text name=reemail required>
-
+        <dt>School House:
+        {% for house in houses %}
+            <dd><input type="radio" name="house" value="{{house.id}}" required>{{ house.name }}<br>
+        {% endfor %}
       <dd><input type=submit value="Add User">
     </dl>
   </form>
