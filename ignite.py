@@ -39,6 +39,7 @@ def login():
 
 @app.route('/adduser', methods=['GET', 'POST'])
 def add_user():
+    # TODO: add better error handling
     error = None
     if session.get('username'):
         return redirect(url_for('index'))
@@ -105,10 +106,11 @@ def show_house(house_id):
 def scan_marker(scan_id):
     if not session.get('user_id'):
         flash("Must be logged in to scan.")
+        # TODO: Redriect Back
         return redirect(url_for("login"))
     hashid = Hashids(min_length=6)
     marker_id = hashid.decode(scan_id)[0]
-    # show the user profile for that user
+    # TODO: Error handling
     try:
         asas = query_db("INSERT INTO scans (user_id, marker_id) values(%s, %s)", [str(session.get('user_id')), str(marker_id)])
     except MySQLdb.Error, e:
@@ -120,6 +122,7 @@ def scan_marker(scan_id):
 @app.context_processor
 def utility_processor():
     def recent_scans(column="all", wid=None, amount=20):
+        # TODO: date-timehandeling
         data = []
         if(column == "user"):
             data = query_db("SELECT * FROM scan_info WHERE user_id = %s order by scan_time asc limit 20", [wid])
