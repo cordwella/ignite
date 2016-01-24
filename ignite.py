@@ -60,8 +60,11 @@ def add_user():
                 flash('You were logged in')
                 return redirect(url_for('index'))
             except MySQLdb.Error, e:
-                if e.args[0] == 1604:
-                    error = "Username already in use. Be more creative"
+                if e.args[0] == 1062:
+                    if 'email' in e.args[1]:
+                        error = "Email already in use. You may already have an account. Try the forgot password link below"
+                    elif 'uname' in e.args[1]:
+                        error = "Username already in use. Be more creative"
                 else:
                     error = "Database Error. %s %s" % (e.args[0], e.args[1])
         else:
@@ -87,19 +90,34 @@ def lost_password():
 @app.route('/user/<int:user_id>')
 def show_user_profile(user_id):
     # show the user profile for that user
-    user = query_db("SELECT * FROM users_with_house WHERE id = %s", [user_id])[0]
+    try:
+        user = query_db("SELECT * FROM users WHERE id = %s", [user_id])[0]
+    except MySQLdb.Error, e:
+        abort(404)
+    except IndexError, e:
+        abort(404)
     return render_template("user.html", user=user)
 
 @app.route('/torch/<int:marker_id>')
 def show_marker(marker_id):
     # show the marker profile
-    marker = query_db("SELECT * FROM markers_with_houses WHERE id = %s", [marker_id])[0]
+    try:
+        marker = query_db("SELECT * FROM markers WHERE id = %s", [marker_id])[0]
+    except MySQLdb.Error, e:
+        abort(404)
+    except IndexError, e:
+        abort(404)
     return render_template("marker.html", marker=marker)
 
 @app.route('/house/<int:house_id>')
 def show_house(house_id):
     # show the user profile for that user
-    house = query_db("SELECT * FROM houses WHERE id = %s", [house_id])[0]
+    try:
+        house = query_db("SELECT * FROM houses WHERE id = %s", [house_id])[0]
+    except MySQLdb.Error, e:
+        abort(404)
+    except IndexError, e:
+        abort(404)
     return render_template("house.html", house=house)
 
 @app.route('/scan/<scan_id>')
@@ -109,14 +127,22 @@ def scan_marker(scan_id):
         # TODO: Redriect Back
         return redirect(url_for("login"))
     hashid = Hashids(min_length=6)
-    marker_id = hashid.decode(scan_id)[0]
+    try:
+        marker_id = hashid.decode(scan_id)[0]
+    except IndexError:
+        abort(404)
     # TODO: Error handling
     try:
         asas = query_db("INSERT INTO scans (user_id, marker_id) values(%s, %s)", [str(session.get('user_id')), str(marker_id)])
     except MySQLdb.Error, e:
-        flash("Database Error. %s %s" % (e.args[0], e.args[1]))
-    return redirect(url_for("show_marker", marker_id=marker_id))
+        if e.args[0] == 1452:
+            abort(404)
+        elif e.args[0] == 1062:
+            flash("You've already scanned this torch.")
+        else:
+            flash("Database Error. %s %s" % (e.args[0], e.args[1]))
 
+    return redirect(url_for("show_marker", marker_id=marker_id))
 
 ## Context Processors
 @app.context_processor
@@ -153,8 +179,8 @@ def error_405(error):
 # Database shisazt
 def connect_db():
     return MySQLdb.connect(host="localhost",    # your host, usually localhost
-                         user="root",         # your username
-                         passwd="4Bl@@psSake",  # your password
+                         user="ignite",         # your username
+                         passwd="password",  # your password
                          db="ignite")        # name of the data base
 
 def query_db(query, values=0):
