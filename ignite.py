@@ -24,17 +24,20 @@ def login():
     if request.method == "POST":
         username = clean_str(request.form['username'])
         password = clean_str(request.form['password'])
-        data = query_db('SELECT * FROM users WHERE uname = %s',[username])
+        if '@' in username:
+            data = query_db('SELECT * FROM users WHERE email = %s',[username])
+        else:
+            data = query_db('SELECT * FROM users WHERE uname = %s',[username])
+
         if len(data) == 0:
             error = 'Invalid username'
         elif data[0]['pword'] == password:
-            session['username'] = username
-            session['user_id'] = query_db('SELECT id FROM users where uname = %s',[username])[0]['id']
+            session['username'] = data[0]['uname']
+            session['user_id'] = data[0]['id']
             flash('You were logged in')
             return redirect(url_for('index'))
         else:
             error = 'Invalid Password'
-
     return render_template('login.html', error=error)
 
 @app.route('/adduser', methods=['GET', 'POST'])
@@ -131,7 +134,6 @@ def scan_marker(scan_id):
         marker_id = hashid.decode(scan_id)[0]
     except IndexError:
         abort(404)
-    # TODO: Error handling
     try:
         asas = query_db("INSERT INTO scans (user_id, marker_id) values(%s, %s)", [str(session.get('user_id')), str(marker_id)])
     except MySQLdb.Error, e:
