@@ -2,12 +2,14 @@ from flask import Flask, request, session, redirect, url_for, \
     abort, render_template, flash
 import MySQLdb
 from hashids import Hashids
+from flask.ext.bcrypt import Bcrypt
 
 DEBUG = True
 SECRET_KEY = 'development key'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+bcrypt = Bcrypt(app)
 
 @app.route('/')
 def index():
@@ -31,7 +33,7 @@ def login():
 
         if len(data) == 0:
             error = 'Invalid username'
-        elif data[0]['pword'] == password:
+        elif bcrypt.check_password_hash(data[0]['pwhash'], password):
             session['username'] = data[0]['uname']
             session['user_id'] = data[0]['id']
             flash('You were logged in')
@@ -57,7 +59,7 @@ def add_user():
         elif username and password: ## basically not null
             #return str(username) + " " + str(password)
             try:
-                data = query_db('INSERT INTO users(uname, pword, email, house_id) values(%s, %s, %s, %s)',[username, password, request.form['email'], house_id])
+                data = query_db('INSERT INTO users(uname, pwhash, email, house_id) values(%s, %s, %s, %s)',[username, bcrypt.generate_password_hash(password), request.form['email'], house_id])
                 session['username'] = username
                 session['user_id'] = query_db('SELECT id FROM users where uname = %s',[username])[0]['id']
                 flash('You were logged in')

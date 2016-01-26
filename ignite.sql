@@ -16,14 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `ignite`
---
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `ignite` /*!40100 DEFAULT CHARACTER SET latin1 */;
-
-USE `ignite`;
-
---
 -- Temporary table structure for view `house_points`
 --
 
@@ -152,7 +144,7 @@ CREATE TABLE `scans` (
   KEY `marker_fk` (`marker_id`),
   CONSTRAINT `marker_fk` FOREIGN KEY (`marker_id`) REFERENCES `markers` (`id`),
   CONSTRAINT `user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -172,16 +164,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = '' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER update_points BEFORE INSERT ON scans FOR EACH ROW BEGIN
-    IF ((SELECT house_id FROM users WHERE id = NEW.user_id)
-     = (SELECT house_id FROM markers where id = NEW.marker_id)) THEN
-        SET NEW.point_value = (SELECT point_value from markers where id= new.marker_id)*2;
-    ELSE
-        SET NEW.point_value = (SELECT point_value from markers where id= new.marker_id);
-    END IF;
- UPDATE users set points = points + NEW.point_value WHERE id = new.user_id;
-
-END */;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 trigger update_points BEFORE INSERT ON scans FOR EACH ROW BEGIN     IF ((SELECT house_id FROM users WHERE id = NEW.user_id)      = (SELECT house_id FROM markers where id = NEW.marker_id)) THEN         SET NEW.point_value = (SELECT point_value from markers where id= new.marker_id)*2;     ELSE         SET NEW.point_value = (SELECT point_value from markers where id= new.marker_id);     END IF;  UPDATE users set points = points + NEW.point_value WHERE id = new.user_id;  END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -199,7 +182,7 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uname` varchar(30) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `pword` varchar(30) NOT NULL,
+  `pwhash` binary(60) NOT NULL,
   `house_id` int(11) NOT NULL,
   `points` int(11) DEFAULT '0',
   PRIMARY KEY (`id`),
@@ -207,7 +190,7 @@ CREATE TABLE `users` (
   UNIQUE KEY `email` (`email`),
   KEY `house_fk` (`house_id`),
   CONSTRAINT `house_fk` FOREIGN KEY (`house_id`) REFERENCES `houses` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -216,7 +199,6 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'wegirl','serdfgyhjk','dfghjk',4,0),(2,'easter','CCserdfg','dfghjk',1,0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -232,19 +214,12 @@ SET character_set_client = utf8;
   `id` tinyint NOT NULL,
   `uname` tinyint NOT NULL,
   `email` tinyint NOT NULL,
-  `pword` tinyint NOT NULL,
   `house_id` tinyint NOT NULL,
   `points` tinyint NOT NULL,
   `name` tinyint NOT NULL,
   `desc` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
-
---
--- Current Database: `ignite`
---
-
-USE `ignite`;
 
 --
 -- Final view structure for view `house_points`
@@ -317,7 +292,7 @@ USE `ignite`;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `users_with_house` AS select `users`.`id` AS `id`,`users`.`uname` AS `uname`,`users`.`email` AS `email`,`users`.`pword` AS `pword`,`users`.`house_id` AS `house_id`,`users`.`points` AS `points`,`houses`.`name` AS `name`,`houses`.`desc` AS `desc` from (`users` join `houses`) where (`houses`.`id` = `users`.`house_id`) */;
+/*!50001 VIEW `users_with_house` AS select `users`.`id` AS `id`,`users`.`uname` AS `uname`,`users`.`email` AS `email`,`users`.`house_id` AS `house_id`,`users`.`points` AS `points`,`houses`.`name` AS `name`,`houses`.`desc` AS `desc` from (`users` join `houses`) where (`houses`.`id` = `users`.`house_id`) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -331,4 +306,4 @@ USE `ignite`;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-01-20 18:35:57
+-- Dump completed on 2016-01-26 14:31:59

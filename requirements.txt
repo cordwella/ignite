@@ -1,7 +1,11 @@
-mariadb-server (or mysql)
 Python 2.x (flask doesn't work on python3)
 Flask
 hashids
+bcrypt
+flask-bcrypt
+
+Apt-Get:
 python-mysqldb (apt-get)
 mariadb(mariadb-server)
 python-dev (contains python.h)
+libffi-dev
