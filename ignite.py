@@ -96,7 +96,7 @@ def lost_password():
 def show_user_profile(user_id):
     # show the user profile for that user
     try:
-        user = query_db("SELECT * FROM users WHERE id = %s", [user_id])[0]
+        user = query_db("SELECT * FROM users_with_house WHERE id = %s", [user_id])[0]
     except MySQLdb.Error, e:
         abort(404)
     except IndexError, e:
@@ -107,7 +107,7 @@ def show_user_profile(user_id):
 def show_marker(marker_id):
     # show the marker profile
     try:
-        marker = query_db("SELECT * FROM markers WHERE id = %s", [marker_id])[0]
+        marker = query_db("SELECT * FROM markers_with_houses WHERE id = %s", [marker_id])[0]
     except MySQLdb.Error, e:
         abort(404)
     except IndexError, e:

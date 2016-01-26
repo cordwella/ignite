@@ -3,7 +3,7 @@
 {% block body %}
     <h2>{{ marker.name }}</h2>
     {% if marker.house %}
-        <a href="{{ url_for('show_house', house_id=marker.house_id)}}">{{ marker.house }}</a>
+        House:<a href="{{ url_for('show_house', house_id=marker.house_id)}}">{{ marker.house }}</a>
         <br>
     {% endif %}
     Point Value: {{ marker.point_value }}
