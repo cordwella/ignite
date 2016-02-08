@@ -1,15 +1,20 @@
 from flask import Flask, request, session, redirect, url_for, \
-    abort, render_template, flash
+    abort, render_template, flash, send_from_directory
 import MySQLdb
 from hashids import Hashids
 from flask.ext.bcrypt import Bcrypt
+from functools import wraps
 
 DEBUG = True
 SECRET_KEY = 'development key'
+HASHID_KEY = 'this is a key'
+ADMIN_UNAME = 'admin'
+ADMIN_PWORD = 'pword'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
 bcrypt = Bcrypt(app)
+
 
 @app.route('/')
 def index():
@@ -22,7 +27,6 @@ def login():
     if session.get('username'):
         return redirect(url_for('index'))
 
-    ## TODO: allow entry by email address
     if request.method == "POST":
         username = clean_str(request.form['username'])
         password = clean_str(request.form['password'])
@@ -131,7 +135,7 @@ def scan_marker(scan_id):
         flash("Must be logged in to scan.")
         # TODO: Redriect Back
         return redirect(url_for("login"))
-    hashid = Hashids(min_length=6)
+    hashid = Hashids(min_length=6, salt=app.config['HASHID_KEY'])
     try:
         marker_id = hashid.decode(scan_id)[0]
     except IndexError:
@@ -165,6 +169,74 @@ def utility_processor():
         return render_template("recent_scans.html", scans=data)
 
     return dict(recent_scans=recent_scans)
+
+## Wrappers for login (Must be defined before use)
+def ad_login_req(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('ad_login'):
+            flash("Must be logged in as admin for this.")
+            abort(401)
+            #return redirect(url_for('admin_login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/admin')
+@ad_login_req
+def admin():
+    return render_template('admin.html')
+
+@app.route('/admin/login', methods=['POST', 'GET'])
+def admin_login():
+    if request.method == "POST":
+        username = clean_str(request.form['username'])
+        password = clean_str(request.form['password'])
+        if username == app.config['ADMIN_UNAME'] and password == app.config['ADMIN_PWORD']:
+            session['ad_login'] = True
+            return redirect('admin')
+        else:
+            flash("Incorrect login details")
+    return render_template('admin-login.html')
+
+@app.route('/admin/logout', methods=['POST', 'GET'])
+@ad_login_req
+def admin_logout():
+    session.pop('ad_login', None)
+    return redirect(url_for('index'))
+
+@app.route('/admin/download', methods=['POST'])
+@ad_login_req
+def download_zip():
+    return send_from_directory('',
+                               'markers.zip', as_attachment=True)# and redirect(url_for('admin'))
+
+@app.route('/admin/gen', methods=['POST'])
+@ad_login_req
+def generate_zip():
+    markers = query_db("SELECT * FROM markers_with_houses")
+    generate_zip(markers)
+    return redirect(url_for('admin'))
+
+def generate_zip(markers):
+    import pyqrcode
+    from zipfile import ZipFile
+    import io
+
+    zipper = ZipFile('markers.zip', 'w')
+    #marker["url"] = "https://amelia.geek.nz/s/" + str(marker['id'])
+    hashid = Hashids(min_length=6, salt=app.config['HASHID_KEY'])
+    for i in range(0, len(markers)):
+        marker = markers[i]
+        marker["url"] = url_for('scan_marker', scan_id=hashid.encode(marker["id"]), _external=True)
+        buffer = io.BytesIO()
+        qrcode = pyqrcode.create(marker["url"])
+        qrcode.svg(buffer, scale=5, background="white")
+        marker["color"] = "black"
+        svgtext = buffer.getvalue()[:-7] +  """<text x="20" y="200"  font-family="Verdana" fill=\"""" + marker["color"]  + "\">" + marker["name"] + " | " + str(marker["point_value"]) + "</text>"  + "</svg>"
+
+        zipper.writestr(str(marker["id"])+".svg", svgtext)
+    zipper.close()
+
 
 ## Error Handlers
 @app.errorhandler(404)
