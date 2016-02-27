@@ -20,13 +20,22 @@ bcrypt = Bcrypt(app)
 def index():
     return render_template('index.html')
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('user_id'):
+            flash('Must be logged in.')
+            #TODO: use of nextu incl post
+            return redirect(url_for('login', nextu=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route('/login', methods=['GET', 'POST'])
-def login():
+@app.route('/login/redirect/<path:nextu>', methods=['GET', 'POST'])
+def login(nextu=None):
     error = None
     if session.get('username'):
         return redirect(url_for('index'))
-
     if request.method == "POST":
         username = clean_str(request.form['username'])
         password = clean_str(request.form['password'])
@@ -41,10 +50,12 @@ def login():
             session['username'] = data[0]['uname']
             session['user_id'] = data[0]['id']
             flash('You were logged in')
+            if nextu:
+                return redirect(nextu)
             return redirect(url_for('index'))
         else:
             error = 'Invalid Password'
-    return render_template('login.html', error=error)
+    return render_template('login.html', error=error, nextu=nextu)
 
 @app.route('/adduser', methods=['GET', 'POST'])
 def add_user():
@@ -130,11 +141,8 @@ def show_house(house_id):
     return render_template("house.html", house=house)
 
 @app.route('/scan/<scan_id>')
+@login_required
 def scan_marker(scan_id):
-    if not session.get('user_id'):
-        flash("Must be logged in to scan.")
-        # TODO: Redriect Back
-        return redirect(url_for("login"))
     hashid = Hashids(min_length=6, salt=app.config['HASHID_KEY'])
     try:
         marker_id = hashid.decode(scan_id)[0]
