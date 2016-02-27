@@ -5,14 +5,8 @@ from hashids import Hashids
 from flask.ext.bcrypt import Bcrypt
 from functools import wraps
 
-DEBUG = True
-SECRET_KEY = 'development key'
-HASHID_KEY = 'this is a key'
-ADMIN_UNAME = 'admin'
-ADMIN_PWORD = 'pword'
-
 app = Flask(__name__)
-app.config.from_object(__name__)
+app.config.from_pyfile('application.cfg', silent=True)
 bcrypt = Bcrypt(app)
 
 
