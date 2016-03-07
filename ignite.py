@@ -256,10 +256,10 @@ def error_405(error):
 
 # Database shisazt
 def connect_db():
-    return MySQLdb.connect(host="localhost",    # your host, usually localhost
-                         user="ignite",         # your username
-                         passwd="password",  # your password
-                         db="ignite")        # name of the data base
+    return MySQLdb.connect(host=app.config['DB_HOST'],    # your host, usually localhost
+                         user=app.config['DB_USER'],         # your username
+                         passwd=app.config['DB_PASS'],  # your password
+                         db=app.config['DB_NAME'])        # name of the data base
 
 def query_db(query, values=0):
     """ Query DB & commit """
