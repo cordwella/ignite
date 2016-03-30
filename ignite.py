@@ -4,6 +4,7 @@ import MySQLdb
 from hashids import Hashids
 from flask.ext.bcrypt import Bcrypt
 from functools import wraps
+from itsdangerous import URLSafeTimedSerializer
 
 app = Flask(__name__)
 app.config.from_pyfile('application.cfg', silent=True)
@@ -97,9 +98,72 @@ def logout():
 @app.route('/forgotpass', methods=['GET','POST'])
 def lost_password():
     if session.get('username'):
+        flash("You've already logged in!!")
         return redirect(url_for('index'))
-    flash("Still working on it bro.")
-    return redirect(url_for('login'))
+
+    if request.method == "POST":
+        email = request.form['email']
+        # check email address in db and get username
+        try:
+            username = query_db("SELECT * FROM users WHERE email = %s", [email])[0]['uname']
+        except:
+            flash("Email Address not found")
+            return render_template('lostpass.html')
+
+        ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
+        token = ts.dumps(email)
+        confirm_url = url_for("resetpassword", serial_tag=token, _external=True)
+
+        msg = render_template("lostpassemail.html", confirm_url=confirm_url, username=username)
+        send_email(email, msg)
+        flash("Email Sent to " + email)
+        return redirect(url_for('login'))
+
+    return render_template('lostpass.html')
+
+@app.route('/resetpassword/<serial_tag>', methods=['GET','POST'])
+def resetpassword(serial_tag):
+    ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
+    try:
+        email = ts.loads(serial_tag, max_age=14400)
+        username = query_db("SELECT * FROM users WHERE email = %s", [email])[0]['uname']
+    except:
+        abort(404)
+
+    if request.method == "POST":
+        password = request.form['password']
+        if password == request.form['confpassword']:
+            try:
+                data = query_db('UPDATE users SET pwhash = %s WHERE email = %s', [bcrypt.generate_password_hash(password), email])
+            except:
+                abort(500)
+            flash("Password has been reset")
+            return redirect(url_for('login'))
+        flash("Passwords do not match")
+    return render_template("resetpass.html",username=username, url=request.url)
+
+def send_email(toadrr,message,fromaddr="amelia.stuffed@gmail.com", subject="Reset Password|Ignite"):
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = subject
+    msg['From'] = "Ignite Admin"
+    msg['To'] = toadrr
+    part2 = MIMEText(message, 'html')
+    msg.attach(part2)
+
+    username = app.config['EMAIL_USER']
+    password = app.config['EMAIL_PASS']
+
+    # Sending the mail
+
+    server = smtplib.SMTP('smtp.gmail.com:587')
+    server.starttls()
+    server.login(username,password)
+    server.sendmail(fromaddr, app.config['TEST_EMAIL'],msg.as_string())
+    server.quit()
+
 
 @app.route('/user/<int:user_id>')
 def show_user_profile(user_id):
@@ -252,6 +316,10 @@ def error_401(error):
 @app.errorhandler(405)
 def error_405(error):
     return render_template('errorpage.html', errorcode="405", message="What are you even trying to do? Wrong method"), 405
+
+@app.errorhandler(500)
+def error_401(error):
+    return render_template('errorpage.html', errorcode="500", message="Error (sorry, contact the site admins for more info)"), 500
 
 
 # Database shisazt
