@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h2>Reset Password</h2>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  <p> Hello {{ username }},</p>
+  <form action="{{ url }}" method=post>
+    <dl>
+      <dt>Reset Password:
+      <dd>Password:<input type=password name=password required>
+      <dd>Confirm Password:<input type=password name=confpassword required>
+      <dd><input type=submit value="Reset Password">
+    </dl>
+  </form>
+{% endblock %}
