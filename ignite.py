@@ -3,8 +3,8 @@ from flask import Flask, request, session, redirect, url_for, \
 import MySQLdb
 from hashids import Hashids
 from flask.ext.bcrypt import Bcrypt
-from functools import wraps
 from itsdangerous import URLSafeTimedSerializer
+from decorators import async, login_required, ad_login_req
 
 app = Flask(__name__)
 app.config.from_pyfile('application.cfg', silent=True)
@@ -14,16 +14,6 @@ bcrypt = Bcrypt(app)
 @app.route('/')
 def index():
     return render_template('index.html')
-
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get('user_id'):
-            flash('Must be logged in.')
-            #TODO: use of nextu incl post
-            return redirect(url_for('login', nextu=request.url))
-        return f(*args, **kwargs)
-    return decorated_function
 
 @app.route('/login', methods=['GET', 'POST'])
 @app.route('/login/redirect/<path:nextu>', methods=['GET', 'POST'])
@@ -142,7 +132,8 @@ def resetpassword(serial_tag):
         flash("Passwords do not match")
     return render_template("resetpass.html",username=username, url=request.url)
 
-def send_email(toadrr,message,fromaddr="amelia.stuffed@gmail.com", subject="Reset Password|Ignite"):
+@async
+def send_email(toadrr,message,fromaddr="ignite.wegc@gmail.com", subject="Reset Password|Ignite"):
     import smtplib
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
@@ -161,7 +152,10 @@ def send_email(toadrr,message,fromaddr="amelia.stuffed@gmail.com", subject="Rese
     server = smtplib.SMTP('smtp.gmail.com:587')
     server.starttls()
     server.login(username,password)
-    server.sendmail(fromaddr, app.config['TEST_EMAIL'],msg.as_string())
+    if app.config['DEBUG']:
+        server.sendmail(fromaddr, app.config['TEST_EMAIL'],msg.as_string())
+    else:
+        server.sendmail(fromaddr, msg['To'], msg.as_string())
     server.quit()
 
 
@@ -236,17 +230,6 @@ def utility_processor():
 
     return dict(recent_scans=recent_scans)
 
-## Wrappers for login (Must be defined before use)
-def ad_login_req(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get('ad_login'):
-            flash("Must be logged in as admin for this.")
-            abort(401)
-            #return redirect(url_for('admin_login', next=request.url))
-        return f(*args, **kwargs)
-    return decorated_function
-
 @app.route('/admin')
 @ad_login_req
 def admin():
@@ -270,17 +253,23 @@ def admin_logout():
     session.pop('ad_login', None)
     return redirect(url_for('index'))
 
+@async
 @app.route('/admin/download', methods=['POST'])
 @ad_login_req
 def download_zip():
-    return send_from_directory('',
-                               'markers.zip', as_attachment=True)# and redirect(url_for('admin'))
+    try:
+        return send_from_directory('','markers.zip', as_attachment=True)# and redirect(url_for('admin'))
+    except:
+        flash("Please generate the .zip first")
+        return redirect(url_for('admin'))
 
+@async
 @app.route('/admin/gen', methods=['POST'])
 @ad_login_req
 def generate_zip():
     markers = query_db("SELECT * FROM markers_with_houses")
     generate_zip(markers)
+    flash("Currently generating .zip in the background, please wait a few minutes")
     return redirect(url_for('admin'))
 
 def generate_zip(markers):
