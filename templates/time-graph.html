@@ -1,0 +1,38 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {'packages':['line']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('number', 'Hours from start');
+        {% for house in houses %}
+            data.addColumn('number', '{{house.name}}');
+        {% endfor %}
+
+      data.addRows([
+        {% for row in graph_data %}
+            [{{row.hour}}
+                {% for house in houses %}, {{row[house.id-1]}} {% endfor %}
+            ],
+        {% endfor %}
+        ]);
+
+      var options = {
+        chart: {
+          title: 'Points over time',
+          subtitle: 'in hours',
+          colors: ['#df3131', '#2b9216', '#e4d42b', '#a6b2e3']
+
+        },
+        height: 500
+      };
+
+      var chart = new google.charts.Line(document.getElementById('linechart_material'));
+
+      chart.draw(data, google.charts.Line.convertOptions(options));
+    }
+
+</script>
+<div id="linechart_material" style="width: fill; height: 500px"></div>

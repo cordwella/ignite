@@ -1,4 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
+    {{  generate_graph()|safe  }}
+
+    {% for house in house_points %}
+        {{ house.name }} : {{ house.points }}<br>
+    {% endfor %}
     {{  recent_scans()|safe  }}
 {% endblock %}
