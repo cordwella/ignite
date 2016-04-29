@@ -13,7 +13,8 @@ bcrypt = Bcrypt(app)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    data = query_db("SELECT * FROM house_points")
+    return render_template('index.html', house_points=data)
 
 @app.route('/login', methods=['GET', 'POST'])
 @app.route('/login/redirect/<path:nextu>', methods=['GET', 'POST'])
@@ -22,7 +23,7 @@ def login(nextu=None):
     if session.get('username'):
         return redirect(url_for('index'))
     if request.method == "POST":
-        username = clean_str(request.form['username'])
+        username = check_str(request.form['username'])
         password = clean_str(request.form['password'])
         if '@' in username:
             data = query_db('SELECT * FROM users WHERE email = %s',[username])
@@ -228,7 +229,58 @@ def utility_processor():
             data = query_db("SELECT * FROM scan_info order by scan_time asc limit 20")
         return render_template("recent_scans.html", scans=data)
 
-    return dict(recent_scans=recent_scans)
+    def generate_graph():
+        houses = query_db("SELECT * FROM houses ORDER BY id")
+        data = []
+        graph_data = []
+
+        lowest_hour = None
+        highest_hour = None
+        no_houses = 0
+        if(len(query_db("SELECT * FROM scans")) < 1):
+            return "No Scans Yet"
+        for house in houses:
+            # We need to know the range of the data but not all houses will have the same range
+            # Normally a long query like this would be put inside a
+            current_data = query_db("SELECT sum(point_value) as points, (hour(scan_time) + day(scan_time)*24) as hour from scan_info where uhouse_id = %s group by hour(scan_time) order by (hour(scan_time) + day(scan_time)*24)", [house['id']] )
+            data.append(current_data)
+            no_houses = no_houses + 1
+            if lowest_hour == None or current_data[0]['hour'] < lowest_hour:
+                lowest_hour = current_data[0]['hour']
+
+            if highest_hour == None or current_data[len(current_data)-1]['hour'] > highest_hour:
+                highest_hour = current_data[len(current_data)-1]['hour']
+        for i in range(highest_hour - lowest_hour +1):
+            row = dict()
+            for n in range(no_houses + 1):
+                if n == 0 or row["hour"] == None:
+                    try:
+                        row["hour"] = data[n][i]["hour"] - lowest_hour
+                    except IndexError:
+                        row["hour"] = None
+                try:
+                    if i > 0:
+                        row[n] = data[n][i]["points"] + graph_data[i-1][n]
+                    else:
+                        row[n] = data[n][i]["points"]
+                except IndexError:
+                    try:
+                        row[n] = graph_data[i-1][n]
+                    except:
+                        row[n] = 0
+
+            if row["hour"] != None:
+                try:
+                    if row["hour"] == graph_data[i-1]["hour"]:
+                        graph_data[i-1] = row
+                    else:
+                        graph_data.append(row)
+                except:
+                    graph_data.append(row)
+
+        return render_template("time-graph.html", houses=houses, graph_data=graph_data)
+
+    return dict(recent_scans=recent_scans, generate_graph=generate_graph)
 
 @app.route('/admin')
 @ad_login_req
