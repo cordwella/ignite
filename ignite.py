@@ -47,20 +47,22 @@ def login(nextu=None):
 def add_user():
     # TODO: add better error handling
     error = None
+    username = None
+    email = None
     if session.get('username'):
         return redirect(url_for('index'))
     if request.method == "POST":
         username = request.form['username']
         password = clean_str(request.form['password'])
         house_id = request.form['house']
+        email = request.form['email']
         if not is_clean_username(username):
             error = "Username must contain only alpha-numeric characters, and must be between 5 and 12 characters"
-        elif not email_validate(request.form['email']):
+        elif not email_validate(email):
             error = "Invalid Email Address"
         elif username and password: ## basically not null
-            #return str(username) + " " + str(password)
             try:
-                data = query_db('INSERT INTO users(uname, pwhash, email, house_id) values(%s, %s, %s, %s)',[username, bcrypt.generate_password_hash(password), request.form['email'], house_id])
+                data = query_db('INSERT INTO users(uname, pwhash, email, house_id) values(%s, %s, %s, %s)',[username, bcrypt.generate_password_hash(password), email, house_id])
                 session['username'] = username
                 session['user_id'] = query_db('SELECT id FROM users where uname = %s',[username])[0]['id']
                 flash('You were logged in')
@@ -76,7 +78,7 @@ def add_user():
         else:
             error = "Invalid Username Or Password"
     houses = query_db("SELECT * FROM houses")
-    return render_template('adduser.html', error=error, houses=houses)
+    return render_template('adduser.html', error=error, houses=houses, email=email, username=username)
 
 
 @app.route('/logout')
@@ -394,6 +396,14 @@ def clean_str(s):
     return s
 
 def is_clean_username(s):
+    banned_words = ["fuck", "screw", "shit", "death"]
+    f = file('banned-words.csv', 'r')
+    text = f.read()
+    banned_words = text.split(',')
+    f.close()
+    for word in banned_words:
+        if word in s:
+            return False
     return s.isalnum() and len(s) >= 5 and len(s) <= 12
 
 def bad_password_check(s):
