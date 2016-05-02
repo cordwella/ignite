@@ -4,10 +4,12 @@ import MySQLdb
 from hashids import Hashids
 from flask.ext.bcrypt import Bcrypt
 from itsdangerous import URLSafeTimedSerializer
-from decorators import async, login_required, ad_login_req
+from decorators import async, login_required
+from admin import admin
 
 app = Flask(__name__)
 app.config.from_pyfile('application.cfg', silent=True)
+app.register_blueprint(admin, url_prefix='/admin')
 bcrypt = Bcrypt(app)
 
 
@@ -283,69 +285,6 @@ def utility_processor():
         return render_template("time-graph.html", houses=houses, graph_data=graph_data)
 
     return dict(recent_scans=recent_scans, generate_graph=generate_graph)
-
-@app.route('/admin')
-@ad_login_req
-def admin():
-    return render_template('admin.html')
-
-@app.route('/admin/login', methods=['POST', 'GET'])
-def admin_login():
-    if request.method == "POST":
-        username = clean_str(request.form['username'])
-        password = clean_str(request.form['password'])
-        if username == app.config['ADMIN_UNAME'] and password == app.config['ADMIN_PWORD']:
-            session['ad_login'] = True
-            return redirect('admin')
-        else:
-            flash("Incorrect login details")
-    return render_template('admin-login.html')
-
-@app.route('/admin/logout', methods=['POST', 'GET'])
-@ad_login_req
-def admin_logout():
-    session.pop('ad_login', None)
-    return redirect(url_for('index'))
-
-@async
-@app.route('/admin/download', methods=['POST'])
-@ad_login_req
-def download_zip():
-    try:
-        return send_from_directory('','markers.zip', as_attachment=True)# and redirect(url_for('admin'))
-    except:
-        flash("Please generate the .zip first")
-        return redirect(url_for('admin'))
-
-@async
-@app.route('/admin/gen', methods=['POST'])
-@ad_login_req
-def generate_zip():
-    markers = query_db("SELECT * FROM markers_with_houses")
-    generate_zip(markers)
-    flash("Currently generating .zip in the background, please wait a few minutes")
-    return redirect(url_for('admin'))
-
-def generate_zip(markers):
-    import pyqrcode
-    from zipfile import ZipFile
-    import io
-
-    zipper = ZipFile('markers.zip', 'w')
-    #marker["url"] = "https://amelia.geek.nz/s/" + str(marker['id'])
-    hashid = Hashids(min_length=6, salt=app.config['HASHID_KEY'])
-    for i in range(0, len(markers)):
-        marker = markers[i]
-        marker["url"] = url_for('scan_marker', scan_id=hashid.encode(marker["id"]), _external=True)
-        buffer = io.BytesIO()
-        qrcode = pyqrcode.create(marker["url"])
-        qrcode.svg(buffer, scale=5, background="white")
-        marker["color"] = "black"
-        svgtext = buffer.getvalue()[:-7] +  """<text x="20" y="200"  font-family="Verdana" fill=\"""" + marker["color"]  + "\">" + marker["name"] + " | " + str(marker["point_value"]) + "</text>"  + "</svg>"
-
-        zipper.writestr(str(marker["id"])+".svg", svgtext)
-    zipper.close()
-
 
 ## Error Handlers
 @app.errorhandler(404)
