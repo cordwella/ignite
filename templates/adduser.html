@@ -6,12 +6,20 @@
   <form action="{{ url_for('add_user') }}" method=post>
     <dl>
         <dt>Username:
-        <dd><input type=text name=username required>
+        {% if username %}
+            <dd><input type=text name=username value="{{username}}" required>
+        {% else %}
+            <dd><input type=text name=username required>
+        {%endif %}
         <!-- TODO: Add show password -->
         <dt>Password:
         <dd><input type=password name=password required>
         <dt>Recovery Email Address:
-        <dd><input type=text name=email required>
+        {% if email %}
+            <dd><input type=text name=email value="{{email}}" required>
+        {% else %}
+            <dd><input type=text name=email required>
+        {% endif %}
         <dt>School House:
         {% for house in houses %}
             <dd><input type="radio" name="house" value="{{house.id}}" required>{{ house.name }}<br>
@@ -19,4 +27,6 @@
       <dd><input type=submit value="Add User">
     </dl>
   </form>
+  <a href="{{ url_for('lost_password') }}"> Forgotten Password? </a>
+
 {% endblock %}
