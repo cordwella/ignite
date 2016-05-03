@@ -1,19 +1,85 @@
 <!doctype html>
-<title>{% block title %}{% endblock %} Ignite</title>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
-<div class=page>
-  <h1><a href="{{ url_for('index') }}">Ignite</a></h1>
-  <div class=metanav>
-  {% if not session.username %}
-    <a href="{{ url_for('add_user') }}">new user</a> |
-    <a href="{{ url_for('login') }}">log in</a>
-  {% else %}
-    {{ session.username }} |
-    <a href="{{ url_for('logout') }}">log out</a>
-  {% endif %}
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>{% block title %}{% endblock %} Ignite</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <!-- Custom css -->
+    <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+  </head>
+
+
+<nav>
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+    <span class="sr-only">Toggle navigation</span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="{{ url_for('index')}}">IGNITE</a>
   </div>
-  {% for message in get_flashed_messages() %}
-    <div class=flash>{{ message }}</div>
-  {% endfor %}
-  {% block body %}{% endblock %}
-</div>
+
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav">
+    <li><a href="{{ url_for('index')}}">Home</a></li>
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Gameplay<span class="caret"></span></a>
+      <ul class="dropdown-menu" role="menu">
+      <li><a href="{{ url_for('login')}}">Description</a></li>
+      <li><a href="#">How to play</a></li>
+      <li><a href="#">House Profiles</a></li>
+      </ul></li>
+
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Intelligence<span class="caret"></span></a>
+      <ul class="dropdown-menu" role="menu">
+      <li><a href="#">Scoreboard</a></li>
+      <li class="divider"></li>
+      <li><a href="#">User Registry</a></li>
+      <li><a href="#">Torch Registry</a></li>
+      </ul>
+
+    <li><a href="https://webqr.com/">Scanner</a></li>
+    </ul>
+
+    <ul class="nav navbar-nav navbar-right">
+    <li><a href="{{ url_for('faq')}}">Support/FAQ</a></li>
+    <li><a href="#">Contact</a></li>
+    {% if not session.username %}
+    <li><a href="{{ url_for('add_user') }}">Create User</a></li>
+    <li><a href="{{ url_for('login') }}">Log In</a></li>
+    {% else %}
+      {{ session.username }} |
+      <a href="{{ url_for('logout') }}">Log Out</a>
+    {% endif %}
+    </ul>
+  </div>
+  </div>
+</nav>
+</nav>
+
+<body>
+{% block body %}{% endblock %}
+</body>
