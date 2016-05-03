@@ -3,27 +3,20 @@ from flask import Flask, request, session, redirect, url_for, \
 import MySQLdb
 from hashids import Hashids
 from flask.ext.bcrypt import Bcrypt
-from functools import wraps
 from itsdangerous import URLSafeTimedSerializer
+from decorators import async, login_required
+from admin import admin
 
 app = Flask(__name__)
 app.config.from_pyfile('application.cfg', silent=True)
+app.register_blueprint(admin, url_prefix='/admin')
 bcrypt = Bcrypt(app)
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
-
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get('user_id'):
-            flash('Must be logged in.')
-            #TODO: use of nextu incl post
-            return redirect(url_for('login', nextu=request.url))
-        return f(*args, **kwargs)
-    return decorated_function
+    data = query_db("SELECT * FROM house_points")
+    return render_template('index.html', house_points=data)
 
 @app.route('/login', methods=['GET', 'POST'])
 @app.route('/login/redirect/<path:nextu>', methods=['GET', 'POST'])
@@ -32,7 +25,7 @@ def login(nextu=None):
     if session.get('username'):
         return redirect(url_for('index'))
     if request.method == "POST":
-        username = clean_str(request.form['username'])
+        username = check_str(request.form['username'])
         password = clean_str(request.form['password'])
         if '@' in username:
             data = query_db('SELECT * FROM users WHERE email = %s',[username])
@@ -56,20 +49,22 @@ def login(nextu=None):
 def add_user():
     # TODO: add better error handling
     error = None
+    username = None
+    email = None
     if session.get('username'):
         return redirect(url_for('index'))
     if request.method == "POST":
         username = request.form['username']
         password = clean_str(request.form['password'])
         house_id = request.form['house']
+        email = request.form['email']
         if not is_clean_username(username):
             error = "Username must contain only alpha-numeric characters, and must be between 5 and 12 characters"
-        elif not email_validate(request.form['email']):
+        elif not email_validate(email):
             error = "Invalid Email Address"
         elif username and password: ## basically not null
-            #return str(username) + " " + str(password)
             try:
-                data = query_db('INSERT INTO users(uname, pwhash, email, house_id) values(%s, %s, %s, %s)',[username, bcrypt.generate_password_hash(password), request.form['email'], house_id])
+                data = query_db('INSERT INTO users(uname, pwhash, email, house_id) values(%s, %s, %s, %s)',[username, bcrypt.generate_password_hash(password), email, house_id])
                 session['username'] = username
                 session['user_id'] = query_db('SELECT id FROM users where uname = %s',[username])[0]['id']
                 flash('You were logged in')
@@ -85,7 +80,7 @@ def add_user():
         else:
             error = "Invalid Username Or Password"
     houses = query_db("SELECT * FROM houses")
-    return render_template('adduser.html', error=error, houses=houses)
+    return render_template('adduser.html', error=error, houses=houses, email=email, username=username)
 
 
 @app.route('/logout')
@@ -142,7 +137,8 @@ def resetpassword(serial_tag):
         flash("Passwords do not match")
     return render_template("resetpass.html",username=username, url=request.url)
 
-def send_email(toadrr,message,fromaddr="amelia.stuffed@gmail.com", subject="Reset Password|Ignite"):
+@async
+def send_email(toadrr,message,fromaddr="ignite.wegc@gmail.com", subject="Reset Password|Ignite"):
     import smtplib
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
@@ -161,7 +157,10 @@ def send_email(toadrr,message,fromaddr="amelia.stuffed@gmail.com", subject="Rese
     server = smtplib.SMTP('smtp.gmail.com:587')
     server.starttls()
     server.login(username,password)
-    server.sendmail(fromaddr, app.config['TEST_EMAIL'],msg.as_string())
+    if app.config['DEBUG']:
+        server.sendmail(fromaddr, app.config['TEST_EMAIL'],msg.as_string())
+    else:
+        server.sendmail(fromaddr, msg['To'], msg.as_string())
     server.quit()
 
 
@@ -234,75 +233,58 @@ def utility_processor():
             data = query_db("SELECT * FROM scan_info order by scan_time asc limit 20")
         return render_template("recent_scans.html", scans=data)
 
-    return dict(recent_scans=recent_scans)
+    def generate_graph():
+        houses = query_db("SELECT * FROM houses ORDER BY id")
+        data = []
+        graph_data = []
 
-## Wrappers for login (Must be defined before use)
-def ad_login_req(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get('ad_login'):
-            flash("Must be logged in as admin for this.")
-            abort(401)
-            #return redirect(url_for('admin_login', next=request.url))
-        return f(*args, **kwargs)
-    return decorated_function
+        lowest_hour = None
+        highest_hour = None
+        no_houses = 0
+        if(len(query_db("SELECT * FROM scans")) < 1):
+            return "No Scans Yet"
+        for house in houses:
+            # We need to know the range of the data but not all houses will have the same range
+            # Normally a long query like this would be put inside a
+            current_data = query_db("SELECT sum(point_value) as points, (hour(scan_time) + day(scan_time)*24) as hour from scan_info where uhouse_id = %s group by hour(scan_time) order by (hour(scan_time) + day(scan_time)*24)", [house['id']] )
+            data.append(current_data)
+            no_houses = no_houses + 1
+            if lowest_hour == None or current_data[0]['hour'] < lowest_hour:
+                lowest_hour = current_data[0]['hour']
 
-@app.route('/admin')
-@ad_login_req
-def admin():
-    return render_template('admin.html')
+            if highest_hour == None or current_data[len(current_data)-1]['hour'] > highest_hour:
+                highest_hour = current_data[len(current_data)-1]['hour']
+        for i in range(highest_hour - lowest_hour +1):
+            row = dict()
+            for n in range(no_houses + 1):
+                if n == 0 or row["hour"] == None:
+                    try:
+                        row["hour"] = data[n][i]["hour"] - lowest_hour
+                    except IndexError:
+                        row["hour"] = None
+                try:
+                    if i > 0:
+                        row[n] = data[n][i]["points"] + graph_data[i-1][n]
+                    else:
+                        row[n] = data[n][i]["points"]
+                except IndexError:
+                    try:
+                        row[n] = graph_data[i-1][n]
+                    except:
+                        row[n] = 0
 
-@app.route('/admin/login', methods=['POST', 'GET'])
-def admin_login():
-    if request.method == "POST":
-        username = clean_str(request.form['username'])
-        password = clean_str(request.form['password'])
-        if username == app.config['ADMIN_UNAME'] and password == app.config['ADMIN_PWORD']:
-            session['ad_login'] = True
-            return redirect('admin')
-        else:
-            flash("Incorrect login details")
-    return render_template('admin-login.html')
+            if row["hour"] != None:
+                try:
+                    if row["hour"] == graph_data[i-1]["hour"]:
+                        graph_data[i-1] = row
+                    else:
+                        graph_data.append(row)
+                except:
+                    graph_data.append(row)
 
-@app.route('/admin/logout', methods=['POST', 'GET'])
-@ad_login_req
-def admin_logout():
-    session.pop('ad_login', None)
-    return redirect(url_for('index'))
+        return render_template("time-graph.html", houses=houses, graph_data=graph_data)
 
-@app.route('/admin/download', methods=['POST'])
-@ad_login_req
-def download_zip():
-    return send_from_directory('',
-                               'markers.zip', as_attachment=True)# and redirect(url_for('admin'))
-
-@app.route('/admin/gen', methods=['POST'])
-@ad_login_req
-def generate_zip():
-    markers = query_db("SELECT * FROM markers_with_houses")
-    generate_zip(markers)
-    return redirect(url_for('admin'))
-
-def generate_zip(markers):
-    import pyqrcode
-    from zipfile import ZipFile
-    import io
-
-    zipper = ZipFile('markers.zip', 'w')
-    #marker["url"] = "https://amelia.geek.nz/s/" + str(marker['id'])
-    hashid = Hashids(min_length=6, salt=app.config['HASHID_KEY'])
-    for i in range(0, len(markers)):
-        marker = markers[i]
-        marker["url"] = url_for('scan_marker', scan_id=hashid.encode(marker["id"]), _external=True)
-        buffer = io.BytesIO()
-        qrcode = pyqrcode.create(marker["url"])
-        qrcode.svg(buffer, scale=5, background="white")
-        marker["color"] = "black"
-        svgtext = buffer.getvalue()[:-7] +  """<text x="20" y="200"  font-family="Verdana" fill=\"""" + marker["color"]  + "\">" + marker["name"] + " | " + str(marker["point_value"]) + "</text>"  + "</svg>"
-
-        zipper.writestr(str(marker["id"])+".svg", svgtext)
-    zipper.close()
-
+    return dict(recent_scans=recent_scans, generate_graph=generate_graph)
 
 ## Error Handlers
 @app.errorhandler(404)
@@ -353,6 +335,14 @@ def clean_str(s):
     return s
 
 def is_clean_username(s):
+    banned_words = ["fuck", "screw", "shit", "death"]
+    f = file('banned-words.csv', 'r')
+    text = f.read()
+    banned_words = text.split(',')
+    f.close()
+    for word in banned_words:
+        if word in s:
+            return False
     return s.isalnum() and len(s) >= 5 and len(s) <= 12
 
 def bad_password_check(s):

@@ -2,3 +2,4 @@
 *.cfg
 venv/
 .DS_Store
+*.pyc
