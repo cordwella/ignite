@@ -1,5 +1,25 @@
 {% extends "layout.html" %}
+
 {% block body %}
+<script src="{{ url_for('static', filename='js/jquery.countdown.js') }}"></script>
+<h1>hi</h1>
+
+ <div id="clock"><script>
+ $('#clock').countdown('2016/05/28').on('update.countdown', function(event) {
+  var $this = $(this).html(event.strftime(''
+     + '<span>%-w</span> week%!w '
+     + '<span>%-d</span> day%!d '
+     + '<span>%H</span> hr '
+     + '<span>%M</span> min '
+     + '<span>%S</span> sec'));
+  });
+ </script></div>
+
+
+<h1>
+
+</h1>
+
     {{  generate_graph()|safe  }}
 
     {% for house in house_points %}

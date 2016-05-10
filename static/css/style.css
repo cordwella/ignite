@@ -1,8 +1,9 @@
-body            { font-family: sans-serif; background: #eee; }
-a, h1, h2       { color: #377ba8; }
+body            { font-family: sans-serif; background: #000; margin-top: 80px;}
+a, h1, h2       { color: #fff; }
 h1, h2          { font-family: 'Georgia', serif; margin: 0; }
 h1              { border-bottom: 2px solid #eee; }
 h2              { font-size: 1.2em; }
+.clock          { margin-top: 80px; color: #377ba9;}
 
 .page           { margin: 2em auto; width: 35em; border: 5px solid #ccc;
                   padding: 0.8em; background: white; }
