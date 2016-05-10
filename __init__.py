@@ -234,7 +234,7 @@ def utility_processor():
         return render_template("recent_scans.html", scans=data)
 
     def generate_graph():
-        houses = query_db("SELECT * FROM houses ORDER BY id")
+        houses = query_db("SELECT * FROM houses ORDER BY name")
         data = []
         graph_data = []
 
@@ -302,6 +302,10 @@ def gameplay():
 @app.route('/support')
 def support():
     return render_template('support.html')
+
+@app.route('/housegraph')
+def housegraph():
+    return render_template('housegraph.html')
 
 @app.route('/recent_scans_page')
 def recent_scans_page():
