@@ -25,7 +25,7 @@ def login(nextu=None):
     if session.get('username'):
         return redirect(url_for('index'))
     if request.method == "POST":
-        username = check_str(request.form['username'])
+        username = clean_str(request.form['username'])
         password = clean_str(request.form['password'])
         if '@' in username:
             data = query_db('SELECT * FROM users WHERE email = %s',[username])
@@ -286,6 +286,34 @@ def utility_processor():
 
     return dict(recent_scans=recent_scans, generate_graph=generate_graph)
 
+##STATIC PAGES
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/gameplay')
+def gameplay():
+    return render_template('gameplay.html')
+
+@app.route('/support')
+def support():
+    return render_template('support.html')
+
+@app.route('/recent_scans_page')
+def recent_scans_page():
+    return render_template('recent_scans_page.html')
+
+@app.route('/torch_registry')
+def torch_registry():
+    torches = query_db("SELECT * from markers_with_houses")
+    return render_template('torch_registry.html', torches=torches)
+
+@app.route('/topusers')
+def topusers():
+    users = query_db("SELECT * from users_with_house ORDER BY points DESC limit 30")
+    return render_template('topuser.html', users=users)
+
+
 ## Error Handlers
 @app.errorhandler(404)
 def error_404(error):
@@ -356,4 +384,4 @@ def email_validate(s):
     return re.match("[^@]+@[^@]+\.[^@]+", s) and clean_str(s)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0')

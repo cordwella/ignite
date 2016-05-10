@@ -1,20 +1,26 @@
-{% extends "layout.html" %}
-{% block title %}Login | {% endblock %}
-{% block body %}
-  <h2>Login</h2>
-  {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
-  {% if nextu %}
-      <form action="{{ url_for('login', nextu=nextu) }}" method=post>
-  {% else %}
-      <form action="{{ url_for('login') }}" method=post>
-  {% endif %}
-    <dl>
-      <dt>Username:
-      <dd><input type=text name=username required>
-      <dt>Password:
-      <dd><input type=password name=password required>
-      <dd><input type=submit value=login>
-    </dl>
-  </form>
-  <a href="{{ url_for('lost_password') }}"> Forgotten Password? </a>
+{% extends "layout.html" %} {% block title %}Login{% endblock %} {% block body %}
+<section class="container content-section text-center">
+    <div class="row">
+        <div class="login-block">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2>Login</h2> {% if error %}
+                <p class=error><strong>ERROR:</strong> {{ error }}</p>{% endif %} {% if nextu %}
+                <form action="{{ url_for('login', nextu=nextu) }}" method=post>
+                    {% else %}
+                    <form action="{{ url_for('login') }}" method=post>
+                        {% endif %}
+                        <input type=text name=username value="" placeholder="Username" id="input" required>
+                        <br>
+                        <input type=password name=password value="" placeholder="Password" id="input" required>
+                        <br>
+                        <br>
+                        <input type=submit name="login" class="btn btn-default-contact" value="LOGIN">
+                    </form>
+                </form>
+                <br>
+                <a href="{{ url_for('lost_password') }}"> Forgotten Password? </a>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
