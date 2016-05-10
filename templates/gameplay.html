@@ -1,0 +1,80 @@
+{% extends "layout.html" %} {% block title %}Gameplay{% endblock %} {% block body %}
+<header id="context" class="context">
+    <div class="context-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <h2>IGNITE Context</h2>
+                    <p>You stand in the remains of the Wellington East Girls’ College Kingdom. Once it was a land full of light, but now only a few torches remain after too many false fire alarms. We need your help; each house in the Kingdom has a very small
+                        stash of torches. Your job? Take the light and pass it on. By sharing the light, we can ignite the land of light once more. You have until the clock strikes 6pm on the 27th of May 2016. The fate of the land rests on your shoulders.</p>
+                    <p>May the best house win, good luck. </p>
+                    <p>
+                        <a href="{{ url_for('gameplay')}}#howtoplaytext1" class="btn btn-circle page-scroll">
+                            <i class="glyphicon glyphicon-menu-down animated"></i></a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section id="howtoplaytext1" class="howtoplaytext text-center">
+    <div class="howtoplaytext-section">
+<div class="container">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h1>STEP 1: Prepare</h1>
+                <p>Get your devices ready! Make sure you have a device that has
+                   an internet connection and is able to scan QR codes. For more information, <a href="{{ url_for('support')}}#accordian#collapse3">click here</a>.</p>
+                   <p>
+                       <a href="{{ url_for('gameplay')}}#howtoplaytext2" class="btn btn-circle page-scroll">
+                           <i class="glyphicon glyphicon-menu-down animated"></i></a>
+                   </p>
+        </div>
+        </div>
+    </div>
+</section>
+
+<section id="howtoplaytext2" class="howtoplaytext text-center">
+    <div class="howtoplaytext-section">
+        <div class="container">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h1>STEP 1: Prepare</h1>
+                <p>Get your devices ready! Make sure you have a device that has
+                   an internet connection and is able to scan QR codes. For more information, click <a href="{{ url_for('support')}}#faq">here</a> for the frequently asked questions.</p>
+                   <p>
+                       <a href="{{ url_for('gameplay')}}#howtoplaytext3" class="btn btn-circle page-scroll">
+                           <i class="glyphicon glyphicon-menu-down animated"></i></a>
+                   </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="howtoplaytext3" class="content-section text-center">
+    <div class="howtoplaytext-section">
+        <div class="container">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h1>STEP 1: Prepare</h1>
+                <p>Get your devices ready! Make sure you have a device that has
+                   an internet connection and is able to scan QR codes. For more information, click here <a href="{{ url_for('support')}}#collapse3"></a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+</div>
+</div>
+</section>
+
+<section id="howtoplayvideo" class="container content-section text-center">
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2">
+            <div align="center" class="embed-responsive embed-responsive-16by9">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/L9VBpbnXhWk" frameborder="0" allowfullscreen></iframe>
+
+            </div>
+
+        </div>
+    </div>
+
+    {% endblock %}

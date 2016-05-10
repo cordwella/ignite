@@ -1,0 +1,29 @@
+{% extends "layout.html" %} {% block title %}Login{% endblock %} {% block body %}
+
+<section class="container content-section text-center">
+    <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+              <h2> Torch Registry</h2>
+
+              <table class="table table-hover">
+                  <thread class="thread-inverse">
+                    <tr>
+                        <th>Placing</th>
+                        <th>Username</th>
+                        <th>House</th>
+                        <th>Score</th>
+                    </tr>
+                  </thread>
+                  {% for user in users %}
+                  <tr>
+                      <td> {{ loop.index }}</td>
+                      <td><a href="{{ url_for('show_user_profile', user_id=user.id) }}">{{user.uname}}</a></td>
+                      <td><a href="{{ url_for('show_house', house_id=user.house_id)}}">{{user.name}} {# house name #}</a></td>
+                      <td>{{user.points}}</td>
+                  </tr>
+              {% endfor %}
+          </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,8 +1,8 @@
--- MySQL dump 10.14  Distrib 5.5.46-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.16  Distrib 10.1.13-MariaDB, for osx10.11 (x86_64)
 --
 -- Host: localhost    Database: ignite
 -- ------------------------------------------------------
--- Server version	5.5.46-MariaDB-1ubuntu0.14.04.2
+-- Server version	10.1.13-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -40,7 +40,8 @@ DROP TABLE IF EXISTS `houses`;
 CREATE TABLE `houses` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(10) NOT NULL,
-  `desc` varchar(100) DEFAULT NULL,
+  `desc` varchar(1000) DEFAULT NULL,
+  `captain` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
@@ -52,7 +53,7 @@ CREATE TABLE `houses` (
 
 LOCK TABLES `houses` WRITE;
 /*!40000 ALTER TABLE `houses` DISABLE KEYS */;
-INSERT INTO `houses` VALUES (1,'Bledisloe','Red hot and can\'t be stopped'),(2,'Jellicoe','I bet you\'re jelly'),(3,'Fergusson','We\'re Fegaliilous'),(4,'Onslow','ONSLOOOOOOOOOOOOOOOW. Mighty mighty Onslow.');
+INSERT INTO `houses` VALUES (1,'Bledisloe','Red hot and can\'t be stopped','Ellie Shea'),(2,'Jellicoe','I bet you\'re jelly','Stella Hudson'),(3,'Fergusson','We\'re Fegaliilous','Lexi Apostolakis'),(4,'Onslow','ONSLOOOOOOOOOOOOOOOW. Mighty mighty Onslow.','Katrina Stephens');
 /*!40000 ALTER TABLE `houses` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -81,7 +82,7 @@ CREATE TABLE `markers` (
 
 LOCK TABLES `markers` WRITE;
 /*!40000 ALTER TABLE `markers` DISABLE KEYS */;
-INSERT INTO `markers` VALUES (1,'Winds About The East Hills',1,1),(2,'Sounds of glorious carefree days',2,2),(3,'DOMELI!',NULL,3);
+INSERT INTO `markers` VALUES (1,'Winds About The East Hills',1,1),(2,'Sounds of glorious carefree days',2,2),(3,'DOMELI!',3,3);
 /*!40000 ALTER TABLE `markers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -144,7 +145,7 @@ CREATE TABLE `scans` (
   KEY `marker_fk` (`marker_id`),
   CONSTRAINT `marker_fk` FOREIGN KEY (`marker_id`) REFERENCES `markers` (`id`),
   CONSTRAINT `user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -190,7 +191,7 @@ CREATE TABLE `users` (
   UNIQUE KEY `email` (`email`),
   KEY `house_fk` (`house_id`),
   CONSTRAINT `house_fk` FOREIGN KEY (`house_id`) REFERENCES `houses` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -306,4 +307,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-01-26 14:31:59
+-- Dump completed on 2016-05-10 16:00:18

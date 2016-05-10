@@ -1,14 +1,24 @@
-{% extends "layout.html" %}
-{% block body %}
-  <h2>Reset Password</h2>
-  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
-  <p> Hello {{ username }},</p>
-  <form action="{{ url }}" method=post>
-    <dl>
-      <dt>Reset Password:
-      <dd>Password:<input type=password name=password required>
-      <dd>Confirm Password:<input type=password name=confpassword required>
-      <dd><input type=submit value="Reset Password">
-    </dl>
-  </form>
+{% extends "layout.html" %} {% block title %}Reset Password{% endblock %} {% block body %}
+
+<section class="container content-section text-center">
+    <div class="row">
+        <div class="login-block">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2>Reset Password</h2> {% if error %}
+                <p class=error><strong>ERROR:</strong> {{ error }}{% endif %}
+                    <p> Hello <strong>{{ username }}</strong>,</p>
+                    <form action="{{ url }}" method=post>
+                        <input type=password name=password value="" placeholder="New Password" id="input" required>
+                        <br>
+                        <input type=password name=confpassword value="" placeholder="Confirm New Password" id="input" required>
+                        <br>
+                        <br>
+                        <input type=submit value="Reset Password" class="btn btn-default-contact">
+
+                    </form>
+
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
