@@ -23,8 +23,17 @@
         chart: {
           title: 'Points over time',
           subtitle: 'in hours',
-          colors: ['#df3131', '#2b9216', '#e4d42b', '#a6b2e3']
-
+          colors: ['#df3131', '#2b9216', '#e4d42b', '#a6b2e3'],
+          vAxis: {
+            viewWindow:{
+              min:0
+            }
+        },
+        hAxis: {
+          viewWindow:{
+            min:0
+          }
+          }
         },
         height: 500
       };
