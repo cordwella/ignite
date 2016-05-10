@@ -242,18 +242,22 @@ def utility_processor():
         highest_hour = None
         no_houses = 0
         if(len(query_db("SELECT * FROM scans")) < 1):
-            return "No Scans Yet"
+            return "No Scans Yet. </br>"
         for house in houses:
             # We need to know the range of the data but not all houses will have the same range
-            # Normally a long query like this would be put inside a
+            # Normally a long query like this would be put inside a view but due to how its calculated
+            # that is impossible in this case
             current_data = query_db("SELECT sum(point_value) as points, (hour(scan_time) + day(scan_time)*24) as hour from scan_info where uhouse_id = %s group by hour(scan_time) order by (hour(scan_time) + day(scan_time)*24)", [house['id']] )
             data.append(current_data)
             no_houses = no_houses + 1
-            if lowest_hour == None or current_data[0]['hour'] < lowest_hour:
-                lowest_hour = current_data[0]['hour']
 
-            if highest_hour == None or current_data[len(current_data)-1]['hour'] > highest_hour:
-                highest_hour = current_data[len(current_data)-1]['hour']
+            if len(current_data) > 0: ## IE if there has been scans try to get the times
+                if lowest_hour == None or current_data[0]['hour'] < lowest_hour:
+                    lowest_hour = current_data[0]['hour']
+
+                if highest_hour == None or current_data[len(current_data)-1]['hour'] > highest_hour:
+                    highest_hour = current_data[len(current_data)-1]['hour']
+
         for i in range(highest_hour - lowest_hour +1):
             row = dict()
             for n in range(no_houses + 1):
