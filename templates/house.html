@@ -1,9 +1,13 @@
-{% extends "layout.html" %}
-{% block title %}{{ house.name }}  | {% endblock %}
-{% block body %}
-    <h2>{{ house.name }}</h2>
-    {{ house.desc }}
-    <br>
-    <h3> Recent Scans: </h3>
-    {{  recent_scans(column="house", wid=house.id)|safe  }}
+{% extends "layout.html" %} {% block title %}{{ house.name }}{% endblock %} {% block body %}
+<section class="container content-section {{ house.name }} text-center">
+    <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                    <h2>{{ house.name }}</h2>
+                    <p>House Prefect: {{ house.captain }}
+                        <br>"{{ house.desc }}"</p>
+                    <br>
+                    <h3> Recent Scans: </h3> {{ recent_scans(column="house", wid=house.id)|safe }}
+                </div>
+    </div>
+</section>
 {% endblock %}

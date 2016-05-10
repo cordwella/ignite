@@ -1,17 +1,27 @@
 <!doctype html>
 
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>{% block title %}{% endblock %} Ignite</title>
+    <title>{% block title %}{% endblock %} | Ignite</title>
 
     <!-- Bootstrap -->
     <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+
+
+
     <!-- Custom css -->
     <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Custom Fonts -->
+    <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -20,66 +30,101 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+
+
+    <!-- jQuery -->
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+
+    <!-- Bootstrap Core JavaScript -->
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-  </head>
+
+    <!-- Plugin JavaScript -->
+    <script src="{{ url_for('static', filename='js/jquery.easing.min.js') }}"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="{{ url_for('static', filename='js/grayscale.js') }}"></script>
+</head>
 
 
 <nav>
-<nav class="navbar navbar-default navbar-fixed-top">
-  <div class="container-fluid">
-  <div class="navbar-header">
-    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-    <span class="sr-only">Toggle navigation</span>
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>
-    </button>
-    <a class="navbar-brand" href="{{ url_for('index')}}">IGNITE</a>
-  </div>
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                    <i class="glyphicon glyphicon-menu-hamburger"></i>
+                </button>
+                <a class="navbar-brand" href="{{ url_for('index')}}"><i class="glyphicon glyphicon-fire"></i>IGNITE</a>
+            </div>
 
-  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-    <ul class="nav navbar-nav">
-    <li><a href="{{ url_for('index')}}">Home</a></li>
-    <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Gameplay<span class="caret"></span></a>
-      <ul class="dropdown-menu" role="menu">
-      <li><a href="{{ url_for('login')}}">Description</a></li>
-      <li><a href="#">How to play</a></li>
-      <li><a href="#">House Profiles</a></li>
-      </ul></li>
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ url_for('index')}}">Home</a></li>
+                    <li><a href="{{ url_for('about')}}">About</a></li>
 
-    <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Intelligence<span class="caret"></span></a>
-      <ul class="dropdown-menu" role="menu">
-      <li><a href="#">Scoreboard</a></li>
-      <li class="divider"></li>
-      <li><a href="#">User Registry</a></li>
-      <li><a href="#">Torch Registry</a></li>
-      </ul>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Gameplay<span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="{{ url_for('gameplay')}}#context">IGNITE Context</a></li>
+                            <li><a href="{{ url_for('gameplay')}}#howtoplaytext1">How to play - text</a></li>
+                            <li><a href="{{ url_for('gameplay')}}#howtoplayvideo">How to play - video</a></li>
+                        </ul>
 
-    <li><a href="https://webqr.com/">Scanner</a></li>
-    </ul>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Houses<span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="{{ url_for('show_house', house_id=1)}}">Bledisloe</a></li>
+                                <li><a href="{{ url_for('show_house', house_id=3)}}">Fergusson</a></li>
+                                <li><a href="{{ url_for('show_house', house_id=2)}}">Jellicoe</a></li>
+                                <li><a href="{{ url_for('show_house', house_id=4)}}">Onslow</a></li>
+                            </ul>
 
-    <ul class="nav navbar-nav navbar-right">
-    <li><a href="{{ url_for('faq')}}">Support/FAQ</a></li>
-    <li><a href="#">Contact</a></li>
-    {% if not session.username %}
-    <li><a href="{{ url_for('add_user') }}">Create User</a></li>
-    <li><a href="{{ url_for('login') }}">Log In</a></li>
-    {% else %}
-      {{ session.username }} |
-      <a href="{{ url_for('logout') }}">Log Out</a>
-    {% endif %}
-    </ul>
-  </div>
-  </div>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Intelligence<span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#">Which house is winning? Graph</a></li>
+                                    <li><a href="{{ url_for('topusers')}}">Who is the top explorer? Table</a></li>
+                                    <li><a href="{{ url_for('recent_scans_page')}}">Recent scans </a></li>
+                                    <li><a href="{{ url_for('torch_registry')}}">Torch Registry</a></li>
+                                </ul>
+
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Scanner<span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="https://play.google.com/store/apps/details?id=com.a13softdev.qrcodereader&hl=en" target="_blank">Google Android</a></li>
+                                        <li><a href="https://itunes.apple.com/nz/app/qr-code-reader-and-scanner/id388175979?mt=8" target="_blank">Apple ios</a></li>
+                                        <li><a href="https://webqr.com/" target="_blank">Web Browser</a></li>
+                                        <li><a href="https://www.microsoft.com/en-nz/store/apps/qr-code-reader/9wzdncrfj1s9" target="_blank">Windows Phone</a></li>
+                                    </ul>
+
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Support<span class="caret"></span></a>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li><a href="{{ url_for('support')}}#contact">Contact</a></li>
+                                            <li><a href="{{ url_for('support')}}#faq">FAQ</a></li>
+                                        </ul>
+
+                                        {% if not session.username %}
+                                        <li><a href="{{ url_for('add_user') }}">Create User</a></li>
+                                        <li><a href="{{ url_for('login') }}">Login</a></li>
+                                        {% else %}
+                                        <li><a href="{{ url_for('show_user_profile', user_id=session.user_id) }}">Hello, {{ session.username }}</a></li>
+                                        <li><a href="{{ url_for('logout') }}">Log Out</a></li> {% endif %}
+            </div>
+        </div>
+    </nav>
 </nav>
-</nav>
+
 
 <body>
-{% block body %}{% endblock %}
+    {% block body %}{% endblock %}
 </body>
+
+
+<!-- Footer
+    <footer>
+        <div class="container text-center">
+            <p>Copyright &copy; Amelia Cordwell and Lana Cleverley 2016</p>
+        </div>
+    </footer>-->
+
+</html>

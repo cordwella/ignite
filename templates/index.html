@@ -1,29 +1,32 @@
 {% extends "layout.html" %}
-
+{% block title %}Home{% endblock %}
 {% block body %}
-<script src="{{ url_for('static', filename='js/jquery.countdown.js') }}"></script>
-<h1>hi</h1>
 
- <div id="clock"><script>
- $('#clock').countdown('2016/05/28').on('update.countdown', function(event) {
-  var $this = $(this).html(event.strftime(''
-     + '<span>%-w</span> week%!w '
-     + '<span>%-d</span> day%!d '
-     + '<span>%H</span> hr '
-     + '<span>%M</span> min '
-     + '<span>%S</span> sec'));
-  });
- </script></div>
+<!--Top of the page/home -->
+<header class="intro">
+    <div class="intro-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <h1 class="brand-heading">IGNITE</h1>
+                    <p class="intro-text">"Take the Light and pass it on"
+                        <br>A QR code game for house points and fun
+                        <br>Created by Amelia Cordwell and Lana Cleverley</p>
 
+                        <p class="intro-text">Current Scores:<br>
 
-<h1>
+                              {% for house in house_points %}
+                                  {{ house.name }} : {{ house.points }}
+                              {% endfor %}
 
-</h1>
+                           </p>
+                    <a href="{{ url_for('about')}}" class="btn btn-circle">
+                        <i class="glyphicon glyphicon-fire animated"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
 
-    {{  generate_graph()|safe  }}
-
-    {% for house in house_points %}
-        {{ house.name }} : {{ house.points }}<br>
-    {% endfor %}
-    {{  recent_scans()|safe  }}
 {% endblock %}

@@ -1,0 +1,29 @@
+{% extends "layout.html" %} {% block title %}Home{% endblock %} {% block body %}
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+
+
+    <!-- About Section -->
+    <header class="about">
+        <div class="about-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <h2>About IGNITE</h2>
+                        <p><strong>IGNITE</strong>, not just a game, but a way of life. Our school, Wellington East Girls’ College, has the motto of “Taking the light and passing it on.” While there are many interpretations of the motto, many associate this
+                            with knowledge. We, the creators, hope that this game will help people learn more about their house, house spirit and the technology used in the game. There are so many cool things about this world, may we all be able to
+                            learn about them and pass that knowledge on. </p>
+
+                        <p><strong>IGNITE</strong> the light, and pass it on!</p>
+                        <p>
+                            <a href="{{ url_for('gameplay')}}#context" class="btn btn-circle">
+                                <i class="glyphicon glyphicon-menu-right animated"></i>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+</body>{% endblock %}
