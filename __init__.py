@@ -241,7 +241,7 @@ def utility_processor():
         lowest_hour = None
         highest_hour = None
         no_houses = 0
-        errors="deat"
+
         if(len(query_db("SELECT * FROM scans")) < 1):
             return "No Scans Yet. </br>"
         for house in houses:
