@@ -241,6 +241,7 @@ def utility_processor():
         lowest_hour = None
         highest_hour = None
         no_houses = 0
+
         if(len(query_db("SELECT * FROM scans")) < 1):
             return "No Scans Yet. </br>"
         for house in houses:
@@ -258,34 +259,28 @@ def utility_processor():
                 if highest_hour == None or current_data[len(current_data)-1]['hour'] > highest_hour:
                     highest_hour = current_data[len(current_data)-1]['hour']
 
-        for i in range(highest_hour - lowest_hour +1):
+        house_pos = [0,0,0,0]
+
+        for i in range(highest_hour - lowest_hour +2):
             row = dict()
-            for n in range(no_houses + 1):
-                if n == 0 or row["hour"] == None:
-                    try:
-                        row["hour"] = data[n][i]["hour"] - lowest_hour
-                    except IndexError:
-                        row["hour"] = None
+            row["hour"] = i
+            for n in range(no_houses):
                 try:
-                    if i > 0:
-                        row[n] = data[n][i]["points"] + graph_data[i-1][n]
-                    else:
-                        row[n] = data[n][i]["points"]
-                except IndexError:
-                    try:
-                        row[n] = graph_data[i-1][n]
-                    except:
-                        row[n] = 0
-
-            if row["hour"] != None:
-                try:
-                    if row["hour"] == graph_data[i-1]["hour"]:
-                        graph_data[i-1] = row
-                    else:
-                        graph_data.append(row)
+                    prevvalue = graph_data[i-1][n]
                 except:
-                    graph_data.append(row)
+                    prevvalue = 0
 
+                if house_pos[n] < len(data[n]):
+                    if int(data[n][pos].get('hour', 0) - lowest_hour) == i:
+
+                        row[n] = data[n][house_pos[n]].get('points', 0) + prevvalue
+                        house_pos[n] = house_pos[n] + 1
+
+                    else:
+                        row[n] = prevvalue
+                else:
+                    row[n] = prevvalue
+            graph_data.append(row)
         return render_template("time-graph.html", houses=houses, graph_data=graph_data)
 
     return dict(recent_scans=recent_scans, generate_graph=generate_graph)
