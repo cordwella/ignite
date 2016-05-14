@@ -17,7 +17,11 @@
                   {% for user in users %}
                   <tr>
                       <td> {{ loop.index }}</td>
-                      <td><a href="{{ url_for('show_user_profile', user_id=user.id) }}">{{user.uname}}</a></td>
+                      <td><a href="{{ url_for('show_user_profile', user_id=user.id) }}">{{user.uname}}
+                          {% if user.uname == session.username %}
+                              (You)
+                          {% endif %}
+                      </a></td>
                       <td><a href="{{ url_for('show_house', house_id=user.house_id)}}">{{user.name}} {# house name #}</a></td>
                       <td>{{user.points}}</td>
                   </tr>
