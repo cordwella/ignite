@@ -234,7 +234,7 @@ def utility_processor():
         return render_template("recent_scans.html", scans=data)
 
     def generate_graph():
-        houses = query_db("SELECT * FROM houses ORDER BY id")
+        houses = query_db("SELECT * FROM houses ORDER BY name")
         data = []
         graph_data = []
 
@@ -271,7 +271,7 @@ def utility_processor():
                     prevvalue = 0
 
                 if house_pos[n] < len(data[n]):
-                    if int(data[n][pos].get('hour', 0) - lowest_hour) == i:
+                    if int(data[n][house_pos[n]].get('hour', 0) - lowest_hour) == i:
 
                         row[n] = data[n][house_pos[n]].get('points', 0) + prevvalue
                         house_pos[n] = house_pos[n] + 1
@@ -297,6 +297,10 @@ def gameplay():
 @app.route('/support')
 def support():
     return render_template('support.html')
+
+@app.route('/housegraph')
+def housegraph():
+    return render_template('housegraph.html')
 
 @app.route('/recent_scans_page')
 def recent_scans_page():
