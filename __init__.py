@@ -68,6 +68,10 @@ def add_user():
                 session['username'] = username
                 session['user_id'] = query_db('SELECT id FROM users where uname = %s',[username])[0]['id']
                 flash('You were logged in')
+                house = query_db('SELECT name FROM houses where id = %s',[house_id])[0]['name']
+                msg = render_template("newaccount.html", username=username, email=email, house=house)
+                send_email(email, msg, 'New Account Notification | Ignite')
+                flash("Email Sent to " + email)
                 return redirect(url_for('index'))
             except MySQLdb.Error, e:
                 if e.args[0] == 1062:
@@ -271,7 +275,7 @@ def utility_processor():
                     prevvalue = 0
 
                 if house_pos[n] < len(data[n]):
-                    if int(data[n][pos].get('hour', 0) - lowest_hour) == i:
+                    if int(data[n][house_pos[n]].get('hour', 0) - lowest_hour) == i:
 
                         row[n] = data[n][house_pos[n]].get('points', 0) + prevvalue
                         house_pos[n] = house_pos[n] + 1

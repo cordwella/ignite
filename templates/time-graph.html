@@ -8,28 +8,18 @@
     function drawChart() {
 
         var data = new google.visualization.DataTable();
-        data.addColumn('number', 'Hours from start'); { %
-            for house in houses %
-        }
-        data.addColumn('number', '{{house.name}}'); { % endfor %
-        }
+        data.addColumn('number', 'Hours from start');
+        {% for house in houses %}
+            data.addColumn('number', '{{house.name}}'); 
+        {% endfor %}
 
-        data.addRows([{ %
-                for row in graph_data %
-            }
-            [{
-                {
-                    row.hour
-                }
-            } { %
-                for house in houses %
-            }, {
-                {
-                    row[house.id - 1]
-                }
-            } { % endfor %
-            }], { % endfor %
-            }
+        data.addRows([
+            {% for row in graph_data %}
+            [{{ row.hour}}
+                {% for house in houses %},
+                    {{row[house.id - 1]}}
+                {% endfor %}],
+             {% endfor %}
         ]);
 
         var options = {
