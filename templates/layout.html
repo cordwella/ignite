@@ -7,7 +7,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>{% block title %}{% endblock %} | Ignite</title>
+    <title>{% block title %}{% endblock %} | IGNITE</title>
+    <meta name="description" content="IGNITE">
+    <meta name="author" content="Amelia Cordwell and Lana Cleverley">
+    <link rel="shortcut icon" href="{{url_for ('static', filename='/images/favicon.ico')}}" type="image/x-icon">
+    <link rel="icon" href="{{url_for ('static', filename='/images/favicon.ico')}}" type="image/x-icon">
 
     <!-- Bootstrap -->
     <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
@@ -119,12 +123,5 @@
     {% block body %}{% endblock %}
 </body>
 
-
-<!-- Footer
-    <footer>
-        <div class="container text-center">
-            <p>Copyright &copy; Amelia Cordwell and Lana Cleverley 2016</p>
-        </div>
-    </footer>-->
 
 </html>

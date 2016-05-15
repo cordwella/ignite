@@ -3,11 +3,14 @@
     <div class="row">
         <div class="col-lg-8 col-lg-offset-2">
             <h2>{{ house.name }}</h2>
-            <p>House Prefect: {{ house.captain }}
-                <br>"{{ house.desc }}"</p>
-            <br>
-            <h3> Recent Scans: </h3> {{ recent_scans(column="house", wid=house.id)|safe }}
+            <div class="col-md-8"><p><strong>House Prefect:</strong> {{ house.captain }}
+                <br>"{{ house.desc }}" </p></div>
+            <div class="col-md-4"><img src="../static/images/{{ house.name }}.jpg" width="275" height ="360"> </div>
         </div>
+        <div class="col-lg-8 col-lg-offset-2">
+          <h3><br> Recent Scans: </h3> {{ recent_scans(column="house", wid=house.id)|safe }}
+        </div>
+      </div>
     </div>
 </section>
 {% endblock %}

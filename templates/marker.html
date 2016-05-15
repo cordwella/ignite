@@ -4,7 +4,7 @@
         <div class="col-lg-8 col-lg-offset-2">
             <h2>{{ marker.name }}</h2> {% if marker.house %}
             <p>A bearer of light (Torch)
-                <br>House: <a href="{{ url_for('show_house', house_id=marker.house_id)}}">{{ marker.house }}</a> {% endif %}
+                <br>House: <a class="{{ marker.house }}" href="{{ url_for('show_house', house_id=marker.house_id)}}">{{ marker.house }}</a> {% endif %}
                 <br> Point Value: {{ marker.point_value }}
             </p>
             <h3> Recent Scans: </h3> {{ recent_scans(column="marker", wid=marker.id)|safe }}
