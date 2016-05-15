@@ -71,10 +71,7 @@ def generate_zip(markers):
         buffer = io.BytesIO()
         qrcode = pyqrcode.create(marker["url"])
         qrcode.svg(buffer, scale=5, background="white")
-        marker["color"] = "black"
-        svgtext = buffer.getvalue()[:-7] +  """<text x="20" y="200"  font-family="Verdana" fill=\"""" + marker["color"]  + "\">" + marker["name"] + " | " + str(marker["point_value"]) + "</text>"  + "</svg>"
-
-        zipper.writestr(str(marker["id"])+".svg", svgtext)
+        zipper.writestr(str(marker["id"])+"-"+marker["name"]+"-"+str(marker["house"])+".svg", buffer.getvalue())
     zipper.close()
 
 # Database shisazt
