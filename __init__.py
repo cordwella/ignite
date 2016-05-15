@@ -271,7 +271,7 @@ def utility_processor():
                     prevvalue = 0
 
                 if house_pos[n] < len(data[n]):
-                    if int(data[n][pos].get('hour', 0) - lowest_hour) == i:
+                    if int(data[n][house_pos[n]].get('hour', 0) - lowest_hour) == i:
 
                         row[n] = data[n][house_pos[n]].get('points', 0) + prevvalue
                         house_pos[n] = house_pos[n] + 1
