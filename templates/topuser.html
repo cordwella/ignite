@@ -1,6 +1,6 @@
 {% extends "layout.html" %} {% block title %}Top 40 Explorers{% endblock %} {% block body %}
 
-<section class="content-section">
+<section class="content-section text-center">
     <div class="content-body">
         <div class="container">
             <div class="row">
@@ -20,7 +20,7 @@
                         <tr>
                             <td> {{ loop.index }}</td>
                             <td><a href="{{ url_for('show_user_profile', user_id=user.id) }}">{{user.uname}}</a></td>
-                            <td><a href="{{ url_for('show_house', house_id=user.house_id)}}">{{user.name}} {# house name #}</a></td>
+                            <td><a class="{{ user.name }}" href="{{ url_for('show_house', house_id=user.house_id)}}">{{user.name}} {# house name #}</a></td>
                             <td>{{user.points}}</td>
                         </tr>
                         {% endfor %}
@@ -28,6 +28,6 @@
                 </div>
             </div>
         </div>
-    </div>
+        </div>
 </section>
 {% endblock %}

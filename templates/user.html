@@ -3,11 +3,7 @@
 <section class="container content-section text-center">
     <div class="row">
         <div class="col-lg-8 col-lg-offset-2">
-            <h2>{{ user.uname }}
-            {% if user.uname == session.username %}
-                (You)
-            {% endif %}
-            </h2>
+            <h2>{{ user.uname }}</h2>
             <p>Explorer, set to find the light.
                 <br>Points Earned: {{ user.points }}
                 <br> House: <a href="{{ url_for('show_house', house_id=user.house_id)}}">{{ user.name }}</a></p>

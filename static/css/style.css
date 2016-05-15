@@ -100,6 +100,7 @@
  * Start Bootstrap - Grayscale Bootstrap Theme (http://startbootstrap.com)
  * Code licensed under the Apache License v2.0.
  * For details, see http://www.apache.org/licenses/LICENSE-2.0.
+ * Code modified by Lana Cleverley for WEGC IGNITE
  */
 
 body {
@@ -108,6 +109,7 @@ body {
     color: #fff;
     background-color: #000;
 }
+
 html {
     width: 100%;
     height: 100%;
@@ -145,8 +147,66 @@ a {
 }
 a:hover, a:focus {
     text-decoration: none;
-    color: #FF8000;
+    color: #FFF;
 }
+
+a.Blank {
+    color: #FFF;
+    -webkit-transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+    text-shadow: .005px 0 0 #000, 0 -0.005px 0 #000, 0 0.005px 0 #000, -0.005px 0 0 #000;
+}
+a.Blank:hover, a.Blank:focus {
+    color: #FF8000;
+
+}
+a.Jellicoe {
+    color: #52ff00;
+    -webkit-transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+    text-shadow: .005px 0 0 #000, 0 -0.005px 0 #000, 0 0.005px 0 #000, -0.005px 0 0 #000;
+}
+a.Jellicoe:hover, a.Jellicoe:focus {
+    color: #FFF;
+
+}
+
+a.Bledisloe {
+    color: #ff4500;
+    -webkit-transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+    text-shadow: .005px 0 0 #000, 0 -0.005px 0 #000, 0 0.005px 0 #000, -0.005px 0 0 #000;
+}
+a.Bledisloe:hover, a.Bledisloe:focus {
+    color: #fff;
+}
+
+a.Fergusson {
+    color: #e3ff00;
+    -webkit-transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+    text-shadow: .005px 0 0 #000, 0 -0.005px 0 #000, 0 0.005px 0 #000, -0.005px 0 0 #000;
+}
+a.Fergusson:hover, a.Fergusson:focus {
+    color: #fff;
+}
+
+a.Onslow {
+    color: #2df2ff;
+    -webkit-transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+    text-shadow: .005px 0 0 #000, 0 -0.005px 0 #000, 0 0.005px 0 #000, -0.005px 0 0 #000;
+}
+a.Onslow:hover, a.Fergusson:focus {
+    color: #fff;
+}
+
+
 .light {
     font-weight: 400;
 }
@@ -290,6 +350,7 @@ a:hover, a:focus {
     display: table-cell;
     vertical-align: middle;
 }
+
 .contact {
     display: table;
     width: 100%;
