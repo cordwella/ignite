@@ -110,7 +110,7 @@ def lost_password():
         confirm_url = url_for("resetpassword", serial_tag=token, _external=True)
 
         msg = render_template("lostpassemail.html", confirm_url=confirm_url, username=username)
-        send_email(email, msg)
+        send_email(email, msg, "Forgot Password? | Ignite")
         flash("Email Sent to " + email)
         return redirect(url_for('login'))
 
@@ -138,7 +138,7 @@ def resetpassword(serial_tag):
     return render_template("resetpass.html",username=username, url=request.url)
 
 @async
-def send_email(toadrr,message,fromaddr="ignite.wegc@gmail.com", subject="Reset Password|Ignite"):
+def send_email(toadrr,message, subject, fromaddr="ignite.wegc@gmail.com",):
     import smtplib
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
