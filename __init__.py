@@ -366,11 +366,11 @@ def clean_str(s):
     return s
 
 def is_clean_username(s):
-    banned_words = ["fuck", "screw", "shit", "death"]
-    f = file('banned-words.csv', 'r')
-    text = f.read()
+    import pkg_resources, os
+    resource_package = __name__  ## Could be any module/package name.
+    resource_path = os.path.join('banned-words.csv')
+    text = pkg_resources.resource_string(resource_package, resource_path)
     banned_words = text.split(',')
-    f.close()
     for word in banned_words:
         if word in s:
             return False
