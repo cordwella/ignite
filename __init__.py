@@ -228,13 +228,13 @@ def utility_processor():
         # TODO: date-timehandeling
         data = []
         if(column == "user"):
-            data = query_db("SELECT * FROM scan_info WHERE user_id = %s order by scan_time asc limit 20", [wid])
+            data = query_db("SELECT * FROM scan_info WHERE user_id = %s order by scan_time desc limit 20", [wid])
         elif(column == "house"):
-            data = query_db("SELECT * FROM scan_info WHERE uhouse_id = %s order by scan_time asc limit 20", [wid])
+            data = query_db("SELECT * FROM scan_info WHERE uhouse_id = %s order by scan_time desc limit 20", [wid])
         elif(column == "marker"):
-            data = query_db("SELECT * FROM scan_info WHERE marker_id = %s order by scan_time asc limit 20", [wid])
+            data = query_db("SELECT * FROM scan_info WHERE marker_id = %s order by scan_time desc limit 20", [wid])
         else:
-            data = query_db("SELECT * FROM scan_info order by scan_time asc limit 20")
+            data = query_db("SELECT * FROM scan_info order by scan_time desc limit 20")
         return render_template("recent_scans.html", scans=data)
 
     def generate_graph():
