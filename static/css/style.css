@@ -153,7 +153,7 @@ a {
 }
 a:hover, a:focus {
     text-decoration: none;
-    color: #FFF;
+    color: #FF8000;
 }
 
 a.Blank {

@@ -108,8 +108,8 @@
                                         </ul>
 
                                         {% if not session.username %}
-                                        <li><a href="{{ url_for('add_user') }}">Create User</a></li>
                                         <li><a href="{{ url_for('login') }}">Login</a></li>
+                                        <li><a href="{{ url_for('add_user') }}">Create User</a></li>
                                         {% else %}
                                         <li><a href="{{ url_for('show_user_profile', user_id=session.user_id) }}">Hello, {{ session.username }}</a></li>
                                         <li><a href="{{ url_for('logout') }}">Log Out</a></li> {% endif %}
