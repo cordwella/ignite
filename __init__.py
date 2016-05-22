@@ -39,6 +39,7 @@ def login(nextu=None):
             session['user_id'] = data[0]['id']
             flash('You were logged in')
             if nextu:
+                nextu = "http://" + nextu
                 return redirect(nextu)
             return redirect(url_for('index'))
         else:
