@@ -76,6 +76,12 @@
     border: 3px solid #ff8000;
     background-color: #fff;
     color: #000;
+    margin-top: 60px;
+    max-width: 500px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 5px;
 }
 
 /*login page/ any pages that include forms/input*/

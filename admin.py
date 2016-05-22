@@ -43,7 +43,9 @@ def admin_logout():
 @ad_login_req
 def download_zip():
     try:
-        return send_from_directory('','markers.zip', as_attachment=True)# and redirect(url_for('admin'))
+        import os
+        __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+        return send_from_directory(__location__, 'markers.zip', as_attachment=True)
     except:
         flash("Please generate the .zip first")
         return redirect(url_for('admin'))
@@ -60,9 +62,9 @@ def generate_zip():
 def generate_zip(markers):
     import pyqrcode
     from zipfile import ZipFile
-    import io
-
-    zipper = ZipFile('markers.zip', 'w')
+    import io, os
+    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    zipper = ZipFile(os.path.join(__location__, 'markers.zip'), 'w')
     #marker["url"] = "https://amelia.geek.nz/s/" + str(marker['id'])
     hashid = Hashids(min_length=6, salt=admin.config['HASHID_KEY'])
     for i in range(0, len(markers)):
