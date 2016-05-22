@@ -6,12 +6,21 @@
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
-
         var data = new google.visualization.DataTable();
+
+        /* So this wasn't working properly for some reason Jellicoe and Fergusson
+        were switched. This isn't a good fix however it goes live tomorrow, I will
+        try fix it for a formal source code release. */
         data.addColumn('number', 'Hours from start');
-        {% for house in houses %}
-            data.addColumn('number', '{{house.name}}'); 
-        {% endfor %}
+
+            data.addColumn('number', 'Bledisloe');
+
+            data.addColumn('number', 'Jellicoe');
+
+            data.addColumn('number', 'Fergusson');
+
+            data.addColumn('number', 'Onslow');
+
 
         data.addRows([
             {% for row in graph_data %}
@@ -42,10 +51,10 @@
                     color: '#f40c0c'
                 },
                 1: {
-                    color: '#e4d42b'
+                    color: '#1dd419'
                 },
                 2: {
-                    color: '#1dd419'
+                    color: '#e4d42b'
                 },
                 3: {
                     color: '#0075ff'
