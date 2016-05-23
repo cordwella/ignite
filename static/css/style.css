@@ -401,7 +401,7 @@ a.Onslow:hover, a.Fergusson:focus {
 @media(min-width:768px) {
     .intro {
         height: 100%;
-        padding: 0;
+        padding-top: 100px;
     }
     .intro .intro-body .brand-heading {
         font-size: 100px;
@@ -518,6 +518,10 @@ a.Onslow:hover, a.Fergusson:focus {
     padding: 100px 50px;
 }
 @media(min-width:767px) {
+  .intro {
+      height: 100%;
+      padding-top: 135px}
+
     .content-section {
         padding-top: 250px;
     }
