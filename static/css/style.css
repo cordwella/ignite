@@ -156,6 +156,16 @@ a:hover, a:focus {
     color: #FF8000;
 }
 
+a.orange {
+    color: #FF8000;
+    -webkit-transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+}
+a.orange:hover, a.orange:focus {
+    color: #FFF;
+
+}
 a.Jellicoe {
     color: #52ff00;
     -webkit-transition: all .2s ease-in-out;
