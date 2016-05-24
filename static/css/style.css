@@ -416,14 +416,17 @@ a.Onslow:hover, a.Fergusson:focus {
     .context {
         height: 100%;
         padding: 0;
+        padding-top: 100px;
     }
     .contact {
         height: 100%;
         padding: 0;
+        padding-top: 100px;
     }
     .howtoplaytext .howtoplaytext-body {
         height: 100%;
         padding: 0px;
+        padding-top: 100px;
     }
 }
 .btn-circle {
