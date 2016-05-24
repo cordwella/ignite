@@ -161,7 +161,6 @@ a.Blank {
     -webkit-transition: all .2s ease-in-out;
     -moz-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
-    text-shadow: .005px 0 0 #000, 0 -0.005px 0 #000, 0 0.005px 0 #000, -0.005px 0 0 #000;
 }
 a.Blank:hover, a.Blank:focus {
     color: #FF8000;
@@ -172,7 +171,6 @@ a.Jellicoe {
     -webkit-transition: all .2s ease-in-out;
     -moz-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
-    text-shadow: .005px 0 0 #000, 0 -0.005px 0 #000, 0 0.005px 0 #000, -0.005px 0 0 #000;
 }
 a.Jellicoe:hover, a.Jellicoe:focus {
     color: #FFF;
@@ -184,7 +182,6 @@ a.Bledisloe {
     -webkit-transition: all .2s ease-in-out;
     -moz-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
-    text-shadow: .005px 0 0 #000, 0 -0.005px 0 #000, 0 0.005px 0 #000, -0.005px 0 0 #000;
 }
 a.Bledisloe:hover, a.Bledisloe:focus {
     color: #fff;
@@ -195,7 +192,6 @@ a.Fergusson {
     -webkit-transition: all .2s ease-in-out;
     -moz-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
-    text-shadow: .005px 0 0 #000, 0 -0.005px 0 #000, 0 0.005px 0 #000, -0.005px 0 0 #000;
 }
 a.Fergusson:hover, a.Fergusson:focus {
     color: #fff;
@@ -206,7 +202,6 @@ a.Onslow {
     -webkit-transition: all .2s ease-in-out;
     -moz-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
-    text-shadow: .005px 0 0 #000, 0 -0.005px 0 #000, 0 0.005px 0 #000, -0.005px 0 0 #000;
 }
 a.Onslow:hover, a.Fergusson:focus {
     color: #fff;
