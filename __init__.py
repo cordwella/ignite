@@ -9,7 +9,7 @@ from admin import admin
 
 app = Flask(__name__)
 app.config.from_pyfile('application.cfg', silent=True)
-app.register_blueprint(admin, url_prefix='/admin', template_folder='templates/admin')
+app.register_blueprint(admin, url_prefix='/admin')
 bcrypt = Bcrypt(app)
 
 

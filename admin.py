@@ -5,7 +5,7 @@ import MySQLdb
 from hashids import Hashids
 
 
-admin = Blueprint('admin', __name__)
+admin = Blueprint('admin', __name__, template_folder='templates/admin')
 admin.config = {}
 
 ## Overide to allow access to configuration values
@@ -30,7 +30,7 @@ def admin_login():
             return redirect('admin')
         else:
             flash("Incorrect login details")
-    return render_template('admin-login.html')
+    return render_template('alogin.html')
 
 @admin.route('/logout', methods=['POST', 'GET'])
 @ad_login_req
