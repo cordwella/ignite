@@ -10,7 +10,7 @@
                         <th>ID</th>
                         <th>Name</th>
                         <th>House</th>
-                        <th>Point's Value</th>
+                        <th>Point Value</th>
                     </tr>
                 </thread>
 
@@ -19,7 +19,8 @@
                 <tr>
                     <td> {{torch.id}}</td>
                     <td> <a class="Blank" href="{{ url_for('show_marker', marker_id=torch.id) }}">{{torch.name}}</a></td>
-                    <td> <a class="{{ torch.house }}" href="{{ url_for('show_house', house_id=torch.house_id)}}">{{torch.house}}</a></td>
+                    <td> {% if torch.house %}<a class="{{ torch.house }}{{ torch.house }}" href="{{ url_for('show_house', house_id=torch.house_id)}}">{{torch.house}}</a>{% else %}
+                    No House {% endif %}</td>
                     <td> {{torch.point_value}}</td>
                 </tr>
 
