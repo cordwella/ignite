@@ -60,7 +60,7 @@ def add_user():
         house_id = request.form['house']
         email = request.form['email']
         if not is_clean_username(username):
-            error = "Username must contain only alpha-numeric characters, and must be between 5 and 12 characters"
+            error = "Username must contain only alpha-numeric characters, and must be between 5 and 20 characters"
         elif not email_validate(email):
             error = "Invalid Email Address"
         elif username and password: ## basically not null
@@ -379,7 +379,7 @@ def is_clean_username(s):
     for word in banned_words:
         if word in s:
             return False
-    return s.isalnum() and len(s) >= 5 and len(s) <= 12
+    return s.isalnum() and len(s) >= 5 and len(s) <= 20
 
 def bad_password_check(s):
     if(len(clean_str(s)) >= 5):
