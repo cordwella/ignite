@@ -39,12 +39,14 @@ DROP TABLE IF EXISTS `houses`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `houses` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(10) NOT NULL,
-  `desc` varchar(1000) DEFAULT NULL,
-  `captain` varchar(100) DEFAULT NULL,
+  `name` varchar(10) NOT NULL COMMENT 'House Name',
+  `desc` varchar(1000) DEFAULT NULL COMMENT 'Long description',
+  `shortdesc` varchar(140) DEFAULT NULL COMMENT 'Short Description to appear on user & marker pages',
+  `captain` varchar(100) DEFAULT NULL COMMENT 'Name of captain or mascot',
+  `color` char(6) DEFAULT 'FFFFFF' COMmENT 'Hex code of the team\'s color ',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -53,7 +55,7 @@ CREATE TABLE `houses` (
 
 LOCK TABLES `houses` WRITE;
 /*!40000 ALTER TABLE `houses` DISABLE KEYS */;
-INSERT INTO `houses` VALUES (1,'Bledisloe','Bledisloe house has won the athletics day competition for the last four years in a row, and the overall house cup for the last three - these stats alone show you that Bledisloe house is not one to mess with! So far as house prefect this year, I\'ve seen girls in red excel on the track and in the field, supporting each other from the sidelines, and chanting their hearts out - not to mention the stunning costumes they came up with for athletics day! I can\'t wait to see them excel even more at all the other things we have lined up for this year.','Ellie Shea'),(2,'Jellicoe','Hi, I am Stella Hudson, 2016\'s Jellicoe House Prefect! I\'m so passionate about our mighty green house and have ever been since year 9! Jellicoe has so much pride and the best chants ever! We love to dance, sing chant and jump. Jellicoe turns everyone in the room green with envy! JELLICOE FOR THE WIN.','Stella Hudson'),(3,'Fergusson','So far this year, we Fergi girls have spread spirit and showed off our best moves at athletics day in our best shades of yellow, keeping up in the running for house cup! I take pride and enjoy pushing and motivating Fergi girls to be there absolute best and reach full potential individually and as a house! and I believe with our enthusiasm, drive and of course awesome dancing we can take out the cup this year!','Lexi Apostolakis'),(4,'Onslow','Passionate, vibrant, dedicated, motivated and talented are just some of the many words to describe the girls that make up Onslow house. Onslow house is the house of blue, the house with the most pride and definitely the house that is going to win it this year. We aren\'t just a house that chants together, we stand together as one. This is why Onslow girls are so unique, we all have each others backs - \'Who has your back, Onslow has your back\'.','Katrina Stephens');
+INSERT INTO `houses` VALUES (1,'Bledisloe','Bledisloe house has won the athletics day competition for the last four years in a row, and the overall house cup for the last three - these stats alone show you that Bledisloe house is not one to mess with! So far as house prefect this year, I\'ve seen girls in red excel on the track and in the field, supporting each other from the sidelines, and chanting their hearts out - not to mention the stunning costumes they came up with for athletics day! I can\'t wait to see them excel even more at all the other things we have lined up for this year.','Red Hot and can\'t be stopped','Ellie Shea','ff0000'),(2,'Jellicoe','Hi, I am Stella Hudson, 2016\'s Jellicoe House Prefect! I\'m so passionate about our mighty green house and have ever been since year 9! Jellicoe has so much pride and the best chants ever! We love to dance, sing chant and jump. Jellicoe turns everyone in the room green with envy! JELLICOE FOR THE WIN.','I bet you\'re jelly.','Stella Hudson', '00ff00'),(3,'Fergusson','So far this year, we Fergi girls have spread spirit and showed off our best moves at athletics day in our best shades of yellow, keeping up in the running for house cup! I take pride and enjoy pushing and motivating Fergi girls to be there absolute best and reach full potential individually and as a house! and I believe with our enthusiasm, drive and of course awesome dancing we can take out the cup this year!', 'We\'re fergalishous', 'Lexi Apostolakis', 'ffff00'),(4,'Onslow','Passionate, vibrant, dedicated, motivated and talented are just some of the many words to describe the girls that make up Onslow house. Onslow house is the house of blue, the house with the most pride and definitely the house that is going to win it this year. We aren\'t just a house that chants together, we stand together as one. This is why Onslow girls are so unique, we all have each others backs - \'Who has your back, Onslow has your back\'.','ONSLOW! MIGHTY ONSLOW!','Katrina Stephens', '0000ff');
 /*!40000 ALTER TABLE `houses` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -143,6 +145,8 @@ CREATE TABLE `scans` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `scans_once` (`user_id`,`marker_id`),
   KEY `marker_fk` (`marker_id`),
+  KEY (`user_id`),
+  KEY (`scan_time`),
   CONSTRAINT `marker_fk` FOREIGN KEY (`marker_id`) REFERENCES `markers` (`id`),
   CONSTRAINT `user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
@@ -293,7 +297,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `users_with_house` AS select `users`.`id` AS `id`,`users`.`uname` AS `uname`,`users`.`email` AS `email`,`users`.`house_id` AS `house_id`,`users`.`points` AS `points`,`houses`.`name` AS `name`,`houses`.`desc` AS `desc` from (`users` join `houses`) where (`houses`.`id` = `users`.`house_id`) */;
+/*!50001 VIEW `users_with_house` AS select `users`.`id` AS `id`,`users`.`uname` AS `uname`,`users`.`email` AS `email`,`users`.`house_id` AS `house_id`,`users`.`points` AS `points`,`houses`.`name` AS `name`,`houses`.`shortdesc` AS `house_desc` from (`users` join `houses`) where (`houses`.`id` = `users`.`house_id`) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;

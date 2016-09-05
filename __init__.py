@@ -266,7 +266,7 @@ def utility_processor():
 
         house_pos = [0,0,0,0]
 
-        for i in range(highest_hour - lowest_hour +2):
+        for i in range(highest_hour - lowest_hour + 1):
             row = dict()
             row["hour"] = i
             for n in range(no_houses):

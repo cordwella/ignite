@@ -12,15 +12,9 @@
         were switched. This isn't a good fix however it goes live tomorrow, I will
         try fix it for a formal source code release. */
         data.addColumn('number', 'Hours from start');
-
-            data.addColumn('number', 'Bledisloe');
-
-            data.addColumn('number', 'Jellicoe');
-
-            data.addColumn('number', 'Fergusson');
-
-            data.addColumn('number', 'Onslow');
-
+        {% for house in houses %}
+            data.addColumn('number', '{{house.name}}');
+        {% endfor %}
 
         data.addRows([
             {% for row in graph_data %}
@@ -47,18 +41,11 @@
                 }
             },
             series: {
-                0: {
-                    color: '#f40c0c'
-                },
-                1: {
-                    color: '#1dd419'
-                },
-                2: {
-                    color: '#e4d42b'
-                },
-                3: {
-                    color: '#0075ff'
-                },
+                {% for house in houses %}
+                    {{loop.index -1}}: {
+                        color: '#{{house.color}}'
+                    },
+                {% endfor %}
             },
 
             height: 500
