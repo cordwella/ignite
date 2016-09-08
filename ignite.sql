@@ -55,7 +55,6 @@ CREATE TABLE `houses` (
 
 LOCK TABLES `houses` WRITE;
 /*!40000 ALTER TABLE `houses` DISABLE KEYS */;
-INSERT INTO `houses` VALUES (1,'Bledisloe','Bledisloe house has won the athletics day competition for the last four years in a row, and the overall house cup for the last three - these stats alone show you that Bledisloe house is not one to mess with! So far as house prefect this year, I\'ve seen girls in red excel on the track and in the field, supporting each other from the sidelines, and chanting their hearts out - not to mention the stunning costumes they came up with for athletics day! I can\'t wait to see them excel even more at all the other things we have lined up for this year.','Red Hot and can\'t be stopped','Ellie Shea','ff0000'),(2,'Jellicoe','Hi, I am Stella Hudson, 2016\'s Jellicoe House Prefect! I\'m so passionate about our mighty green house and have ever been since year 9! Jellicoe has so much pride and the best chants ever! We love to dance, sing chant and jump. Jellicoe turns everyone in the room green with envy! JELLICOE FOR THE WIN.','I bet you\'re jelly.','Stella Hudson', '00ff00'),(3,'Fergusson','So far this year, we Fergi girls have spread spirit and showed off our best moves at athletics day in our best shades of yellow, keeping up in the running for house cup! I take pride and enjoy pushing and motivating Fergi girls to be there absolute best and reach full potential individually and as a house! and I believe with our enthusiasm, drive and of course awesome dancing we can take out the cup this year!', 'We\'re fergalishous', 'Lexi Apostolakis', 'ffff00'),(4,'Onslow','Passionate, vibrant, dedicated, motivated and talented are just some of the many words to describe the girls that make up Onslow house. Onslow house is the house of blue, the house with the most pride and definitely the house that is going to win it this year. We aren\'t just a house that chants together, we stand together as one. This is why Onslow girls are so unique, we all have each others backs - \'Who has your back, Onslow has your back\'.','ONSLOW! MIGHTY ONSLOW!','Katrina Stephens', '0000ff');
 /*!40000 ALTER TABLE `houses` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -187,15 +186,15 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uname` varchar(30) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `pwhash` binary(60) NOT NULL,
+  `pwhash` binary(60) NOT NULL COMMENT 'ByCrypt hash in WEGC implementation',
   `house_id` int(11) NOT NULL,
-  `points` int(11) DEFAULT '0',
+  `points` int(11) DEFAULT '0' COMMENT 'In current version points are only calculated from scans but this leaves room for more interpretations',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uname` (`uname`),
   UNIQUE KEY `email` (`email`),
   KEY `house_fk` (`house_id`),
   CONSTRAINT `house_fk` FOREIGN KEY (`house_id`) REFERENCES `houses` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
