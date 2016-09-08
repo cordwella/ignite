@@ -70,11 +70,15 @@ CREATE TABLE `markers` (
   `name` varchar(100) NOT NULL,
   `house_id` int(11) DEFAULT NULL,
   `point_value` int(3) DEFAULT '1',
+  `in_current_use` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'If set to false it will not allow users to scan it',
+  `is_hidden` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Determines wether or not to display it on the torch registry',
+  `batch` varchar(20) NULL COMMENT 'For determining whether it should be generated/printed at this time (admin use only) ',/* TODO: Table with FK? */
+  `location` varchar(15) NULL COMMENT 'Admin use, to remember where you have placed it, can be useful if you are wanting to do data analysis later',/* TODO: Table with FK? */
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `catergory_fk` (`house_id`),
   CONSTRAINT `catergory_fk` FOREIGN KEY (`house_id`) REFERENCES `houses` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -258,7 +262,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `markers_with_houses` AS select `markers`.`id` AS `id`,`markers`.`name` AS `name`,`markers`.`house_id` AS `house_id`,`markers`.`point_value` AS `point_value`,`houses`.`name` AS `house`,`houses`.`desc` AS `house_desc` from (`markers` left join `houses` on((`houses`.`id` = `markers`.`house_id`))) */;
+/*!50001 VIEW `markers_with_houses` AS select `markers`.`id` AS `id`,`markers`.`name` AS `name`,`markers`.`house_id` AS `house_id`,`markers`.`point_value` AS `point_value`,`houses`.`name` AS `house`,`houses`.`shortdesc` AS `house_desc`, `markers`.`is_hidden` as `is_hidden`, `markers`.`in_current_use` AS `in_current_use` from (`markers` left join `houses` on((`houses`.`id` = `markers`.`house_id`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;

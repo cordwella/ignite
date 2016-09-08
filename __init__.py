@@ -208,17 +208,24 @@ def scan_marker(scan_id):
     hashid = Hashids(min_length=6, salt=app.config['HASHID_KEY'])
     try:
         marker_id = hashid.decode(scan_id)[0]
-    except IndexError:
-        abort(404)
-    try:
-        asas = query_db("INSERT INTO scans (user_id, marker_id) values(%s, %s)", [str(session.get('user_id')), str(marker_id)])
+        is_active = query_db("SELECT * FROM markers WHERE id = %s", [marker_id])[0]['in_current_use']
     except MySQLdb.Error, e:
-        if e.args[0] == 1452:
-            abort(404)
-        elif e.args[0] == 1062:
-            flash("You've already scanned this torch.")
-        else:
-            flash("Database Error. %s %s" % (e.args[0], e.args[1]))
+        abort(404)
+    except IndexError, e:
+        abort(404)
+
+    if is_active == 1:
+        try:
+            asas = query_db("INSERT INTO scans (user_id, marker_id) values(%s, %s)", [str(session.get('user_id')), str(marker_id)])
+        except MySQLdb.Error, e:
+            if e.args[0] == 1452:
+                abort(404)
+            elif e.args[0] == 1062:
+                flash("You've already scanned this torch.")
+            else:
+                flash("Database Error. %s %s" % (e.args[0], e.args[1]))
+    else:
+        flash("Unfortunatley this marker is incative at this time and therefore you cannot scan it.")
 
     return redirect(url_for("show_marker", marker_id=marker_id))
 
@@ -313,7 +320,7 @@ def recent_scans_page():
 
 @app.route('/torch_registry')
 def torch_registry():
-    torches = query_db("SELECT * from markers_with_houses")
+    torches = query_db("SELECT * from markers_with_houses WHERE is_hidden = 0")
     return render_template('torch_registry.html', torches=torches)
 
 @app.route('/topusers')
