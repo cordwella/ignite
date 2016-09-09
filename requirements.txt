@@ -1,12 +1,15 @@
-Python 2.x (flask doesn't work on python3)
-Flask
-hashids
-bcrypt
-flask-bcrypt
-itsdangerous (should come pre-installed with Flask)
-
-Apt-Get:
-python-mysqldb (apt-get)
-mariadb(mariadb-server)
-python-dev (contains python.h)
-libffi-dev
+bcrypt==3.1.0
+cffi==1.8.2
+click==6.6
+Flask==0.11.1
+Flask-Bcrypt==0.7.1
+hashids==1.1.0
+itsdangerous==0.24
+Jinja2==2.8
+MarkupSafe==0.23
+pkg-resources==0.0.0
+pycparser==2.14
+PyMySQL==0.7.9
+PyQRCode==1.2.1
+six==1.10.0
+Werkzeug==0.11.11

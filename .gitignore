@@ -1,6 +1,7 @@
 *.zip
 *.cfg
 venv/
+__pycache__/
 **/.DS_Store
 *.pyc
 .DS_Store

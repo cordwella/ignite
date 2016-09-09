@@ -1,8 +1,9 @@
 from flask import Blueprint, request, session, redirect, url_for, \
     abort, render_template, flash, send_from_directory
 from decorators import async, ad_login_req
-import MySQLdb
 from hashids import Hashids
+import pymysql
+pymysql.install_as_MySQLdb()
 
 
 admin = Blueprint('admin', __name__, template_folder='templates/admin')
@@ -12,7 +13,7 @@ admin.config = {}
 @admin.record
 def record_params(setup_state):
   app = setup_state.app
-  admin.config = dict([(key,value) for (key,value) in app.config.iteritems()])
+  admin.config = dict([(key,value) for (key,value) in app.config.items()])
 
 
 @admin.route('/')
@@ -78,7 +79,7 @@ def generate_zip(markers):
 
 # Database shisazt
 def connect_db():
-    return MySQLdb.connect(host=admin.config['DB_HOST'],    # your host, usually localhost
+    return pymysql.connect(host=admin.config['DB_HOST'],    # your host, usually localhost
                          user=admin.config['DB_USER'],         # your username
                          passwd=admin.config['DB_PASS'],  # your password
                          db=admin.config['DB_NAME'])        # name of the data base
@@ -86,7 +87,7 @@ def connect_db():
 def query_db(query, values=0):
     """ Query DB & commit """
     db = connect_db()
-    cur = db.cursor(MySQLdb.cursors.DictCursor)
+    cur = db.cursor(pymysql.cursors.DictCursor)
     if isinstance(values, (list, tuple)):
         cur.execute(query, values)
     else:
