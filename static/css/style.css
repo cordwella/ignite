@@ -156,15 +156,14 @@ a:hover, a:focus {
     color: #FF8000;
 }
 
-a.Blank {
-    color: #FFF;
+a.orange {
+    color: #FF8000;
     -webkit-transition: all .2s ease-in-out;
     -moz-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
-    text-shadow: .005px 0 0 #000, 0 -0.005px 0 #000, 0 0.005px 0 #000, -0.005px 0 0 #000;
 }
-a.Blank:hover, a.Blank:focus {
-    color: #FF8000;
+a.orange:hover, a.orange:focus {
+    color: #FFF;
 
 }
 a.Jellicoe {
@@ -172,7 +171,6 @@ a.Jellicoe {
     -webkit-transition: all .2s ease-in-out;
     -moz-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
-    text-shadow: .005px 0 0 #000, 0 -0.005px 0 #000, 0 0.005px 0 #000, -0.005px 0 0 #000;
 }
 a.Jellicoe:hover, a.Jellicoe:focus {
     color: #FFF;
@@ -184,7 +182,6 @@ a.Bledisloe {
     -webkit-transition: all .2s ease-in-out;
     -moz-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
-    text-shadow: .005px 0 0 #000, 0 -0.005px 0 #000, 0 0.005px 0 #000, -0.005px 0 0 #000;
 }
 a.Bledisloe:hover, a.Bledisloe:focus {
     color: #fff;
@@ -195,7 +192,6 @@ a.Fergusson {
     -webkit-transition: all .2s ease-in-out;
     -moz-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
-    text-shadow: .005px 0 0 #000, 0 -0.005px 0 #000, 0 0.005px 0 #000, -0.005px 0 0 #000;
 }
 a.Fergusson:hover, a.Fergusson:focus {
     color: #fff;
@@ -206,7 +202,6 @@ a.Onslow {
     -webkit-transition: all .2s ease-in-out;
     -moz-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
-    text-shadow: .005px 0 0 #000, 0 -0.005px 0 #000, 0 0.005px 0 #000, -0.005px 0 0 #000;
 }
 a.Onslow:hover, a.Fergusson:focus {
     color: #fff;
@@ -401,7 +396,7 @@ a.Onslow:hover, a.Fergusson:focus {
 @media(min-width:768px) {
     .intro {
         height: 100%;
-        padding: 0;
+        padding-top: 100px;
     }
     .intro .intro-body .brand-heading {
         font-size: 100px;
@@ -416,14 +411,17 @@ a.Onslow:hover, a.Fergusson:focus {
     .context {
         height: 100%;
         padding: 0;
+        padding-top: 100px;
     }
     .contact {
         height: 100%;
         padding: 0;
+        padding-top: 100px;
     }
     .howtoplaytext .howtoplaytext-body {
         height: 100%;
         padding: 0px;
+        padding-top: 100px;
     }
 }
 .btn-circle {
@@ -490,14 +488,14 @@ a.Onslow:hover, a.Fergusson:focus {
     }
 }
 .content-section {
-    padding-top: 125px;
+    padding-top: 150px;
     padding-bottom: 125px;
 }
 
 /*new is short for new user*/
 
 .content-sectionnew {
-    padding-top: 175px;
+    padding-top: 145px;
     padding-bottom: 125px;
 }
 .content-sectionfaq {
@@ -518,8 +516,12 @@ a.Onslow:hover, a.Fergusson:focus {
     padding: 100px 50px;
 }
 @media(min-width:767px) {
+  .intro {
+      height: 100%;
+      padding-top: 135px}
+
     .content-section {
-        padding-top: 250px;
+        padding-top: 150px;
     }
     .howtoplaytext-section {
         padding: 100px;

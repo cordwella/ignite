@@ -1,5 +1,5 @@
 {% extends "layout.html" %} {% block title %}Login{% endblock %} {% block body %}
-<section class="container content-section text-center">
+<section class="container content-sectionnew text-center">
     <div class="row">
         <div class="login-block">
             <div class="col-lg-8 col-lg-offset-2">
@@ -18,8 +18,8 @@
                     </form>
                 </form>
                 <br>
-                <p id="house">Don't have an account? <a href="{{url_for('add_user')}}">Click here</a></p>
-                <a href="{{ url_for('lost_password') }}"> Forgotten Password? </a>
+                <p id="house" ><a class="orange" href="{{url_for('add_user')}}">Don't have an account? </a></p>
+                <p id="house" ><a class="orange" href="{{ url_for('lost_password') }}"> Forgotten Password? </a></p>
             </div>
         </div>
     </div>
