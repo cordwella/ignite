@@ -37,7 +37,7 @@ First clone this repo into a folder of your choice:
 
 ```
 cd /folder/of/your/choice
-git clone https://github.com/cordwella/eli-dmx.git
+git clone https://github.com/cordwella/ignite.git
 ```
 
 Make sure the permissions in this folder will allow the python program to read and write files.
