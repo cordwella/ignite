@@ -1,17 +1,42 @@
 from flask import Flask, request, session, redirect, url_for, \
-    abort, render_template, flash, send_from_directory
+    abort, render_template, flash
 from hashids import Hashids
-from flask.ext.bcrypt import Bcrypt
+from flask_bcrypt import Bcrypt
 from itsdangerous import URLSafeTimedSerializer
 from decorators import async, login_required
-from admin import admin
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+from models import db, Houses, Markers, Users, MyAdminIndexView, QRGenView
 import pymysql
 pymysql.install_as_MySQLdb()
 
 app = Flask(__name__)
 app.config.from_pyfile('application.cfg', silent=True)
-app.register_blueprint(admin, url_prefix='/admin')
 bcrypt = Bcrypt(app)
+
+admin = Admin(app, name="IGNITE Admin", index_view=MyAdminIndexView())
+db.init_app(app)
+admin.add_view(QRGenView(name='Generate QR codes', endpoint='gen'))
+admin.add_view(ModelView(Users, db.session))
+admin.add_view(ModelView(Markers, db.session))
+admin.add_view(ModelView(Houses, db.session))
+
+@app.route('/adminlogin', methods=['POST', 'GET'])
+def admin_login():
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
+        if username == app.config['ADMIN_UNAME'] and password == app.config['ADMIN_PWORD']:
+            session['ad_login'] = True
+            return redirect('admin')
+        else:
+            flash("Incorrect login details")
+    return render_template('alogin.html')
+
+@app.route('/adminlogout', methods=['POST', 'GET'])
+def admin_logout():
+    session.pop('ad_login', None)
+    return redirect(url_for('index'))
 
 
 @app.route('/')

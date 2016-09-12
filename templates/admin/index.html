@@ -1,0 +1,10 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+    <form action="{{ url_for('gen.download_zip') }}" method=post>
+        <input type=submit value="Download Zip of QR codes">
+    </form>
+    <form action="{{ url_for('gen.generate_zip') }}" method=post>
+        <input type=submit value="Re-generate zip">
+    </form>
+{% endblock %}
