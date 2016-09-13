@@ -10,6 +10,7 @@ class Houses(db.Model):
     shortdesc = db.Column(db.String(140))
     captain = db.Column(db.String(100))
     color = db.Column(db.String(6))
+    imagepath = db.Column(db.String(128))
 
     def __str__(self):
         return self.name

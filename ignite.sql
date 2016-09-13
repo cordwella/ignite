@@ -44,6 +44,7 @@ CREATE TABLE `houses` (
   `shortdesc` varchar(140) DEFAULT NULL COMMENT 'Short Description to appear on user & marker pages',
   `captain` varchar(100) DEFAULT NULL COMMENT 'Name of captain or mascot',
   `color` char(6) DEFAULT 'FFFFFF' COMmENT 'Hex code of the team\'s color ',
+  `imagepath` varchar(128) DEFAULT NULL COMMENT 'Path to house image',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
