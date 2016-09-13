@@ -139,7 +139,6 @@ class MarkerView(ModelView):
         """
             Custom view for mass changing.
         """
-        print(self.__dict__)
         return self.render('admin/marker_mass.html')
 
     @expose('/mass/can_scan', methods=['POST'])
@@ -208,3 +207,6 @@ class MarkerView(ModelView):
             flash("Failed to update database")
 
         return redirect(url_for('.mass_view'))
+
+class UserView(ModelView):
+    column_exclude_list = ['pwhash']

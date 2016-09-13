@@ -7,7 +7,7 @@ from decorators import async, login_required
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from models import db, Houses, Markers, Users
-from admin_views import MyAdminIndexView, QRGenView, MarkerView
+from admin_views import MyAdminIndexView, QRGenView, MarkerView, UserView
 import pymysql
 pymysql.install_as_MySQLdb()
 
@@ -18,7 +18,7 @@ bcrypt = Bcrypt(app)
 admin = Admin(app, name="IGNITE Admin", index_view=MyAdminIndexView())
 db.init_app(app)
 admin.add_view(QRGenView(name='Generate QR codes', endpoint='gen'))
-admin.add_view(ModelView(Users, db.session))
+admin.add_view(UserView(Users, db.session))
 admin.add_view(MarkerView(Markers, db.session))
 admin.add_view(ModelView(Houses, db.session))
 
