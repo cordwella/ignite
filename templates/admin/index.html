@@ -7,4 +7,5 @@
     <form action="{{ url_for('gen.generate_zip') }}" method=post>
         <input type=submit value="Re-generate zip">
     </form>
+    <a href="{{ url_for('admin_logout')}}"> Logout </a>
 {% endblock %}
