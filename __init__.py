@@ -6,7 +6,8 @@ from itsdangerous import URLSafeTimedSerializer
 from decorators import async, login_required
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from models import db, Houses, Markers, Users, MyAdminIndexView, QRGenView, MarkerView
+from models import db, Houses, Markers, Users
+from admin_views import MyAdminIndexView, QRGenView, MarkerView
 import pymysql
 pymysql.install_as_MySQLdb()
 
