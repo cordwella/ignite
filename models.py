@@ -38,4 +38,16 @@ class Users(db.Model):
     houses = db.relationship('Houses', backref=db.backref('Users'))
 
     def __str__(self):
-        return self.name
+        return self.uname
+
+class Scans(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(Users.id), nullable=False)
+    marker_id = db.Column(db.Integer, db.ForeignKey(Markers.id), nullable=False)
+    point_value = db.Column(db.Integer, nullable=False)
+    scan_time = db.Column(db.DateTime)
+    users = db.relationship('Users', backref=db.backref('Scans'))
+    markers = db.relationship('Markers', backref=db.backref('Scans'))
+
+    def __str__(self):
+        return  self.users.uname + " scanned '" + self.markers.name + "'"
