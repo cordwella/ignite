@@ -7,7 +7,7 @@ from decorators import async, login_required
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from models import db, Houses, Markers, Users
-from admin_views import MyAdminIndexView, QRGenView, MarkerView, UserView
+from admin_views import MyAdminIndexView, QRGenView, MarkerView, UserView, HouseView
 import pymysql
 pymysql.install_as_MySQLdb()
 
@@ -20,7 +20,7 @@ db.init_app(app)
 admin.add_view(QRGenView(name='Generate QR codes', endpoint='gen'))
 admin.add_view(UserView(Users, db.session))
 admin.add_view(MarkerView(Markers, db.session))
-admin.add_view(ModelView(Houses, db.session))
+admin.add_view(HouseView(Houses, db.session))
 
 @app.route('/adminlogin', methods=['POST', 'GET'])
 def admin_login():

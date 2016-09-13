@@ -1,10 +1,20 @@
-from flask_admin import AdminIndexView, BaseView, expose
+from flask_admin import AdminIndexView, BaseView, expose, form
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.actions import action
+from flask_admin.form import rules
 from flask import current_app
 from flask import session, flash, redirect, url_for, request, send_from_directory
 from hashids import Hashids
 from models import Houses, Markers, Users
+from sqlalchemy.event import listens_for
+import os
+import os.path as op
+
+file_path = op.join(op.dirname(__file__), 'static/upload')
+try:
+    os.mkdir(file_path)
+except OSError:
+    pass
 
 class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):
@@ -210,3 +220,33 @@ class MarkerView(ModelView):
 
 class UserView(ModelView):
     column_exclude_list = ['pwhash']
+
+class HouseView(ModelView):
+    form_overrides = {
+        'imagepath': form.FileUploadField
+    }
+
+    # Pass additional parameters to 'path' to FileUploadField constructor
+    form_args = {
+        'imagepath': {
+            'label': 'File',
+            'base_path': file_path,
+            'allow_overwrite': False
+        }
+    }
+
+@listens_for(Houses, 'after_delete')
+def del_image(mapper, connection, target):
+    if target.path:
+        # Delete image
+        try:
+            os.remove(op.join(file_path, target.path))
+        except OSError:
+            pass
+
+        # Delete thumbnail
+        try:
+            os.remove(op.join(file_path,
+                              form.thumbgen_filename(target.path)))
+        except OSError:
+            pass
