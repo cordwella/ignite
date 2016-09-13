@@ -1,0 +1,37 @@
+{% extends 'admin/model/list.html' %}
+{% block model_menu_bar %}
+<ul class="nav nav-tabs actions-nav">
+    <li>
+        <a href="{{ url_for('.edit_view') }}">List</a>
+    </li>
+
+    <li>
+        <a href="{{ url_for('.create_view') }}" title="Create New Record">Create</a>
+    </li>
+
+    <li class="active">
+        <a href="javascript:void(0)" title="Create New Record">Mass Edit</a></li>
+    </ul>
+{% endblock %}
+
+{% block model_list_table %}
+    <br>
+    <p> These functions are here so that you can switch all of the markers to a number of settings, not just the ones displayed on a single page. </p>
+
+    <h3> Scanablility </h3>
+    <form action="{{ url_for('.set_all_on') }}" method=post>
+        <input type=submit value="Set All Markers to Active">
+    </form>
+    <form action="{{ url_for('.set_all_off') }}" method=post>
+        <input type=submit value="Set All Markers to Inactive">
+    </form>
+
+    <h3> Visibility on registry page </h3>
+    <form action="{{ url_for('.set_all_hidden') }}" method=post>
+        <input type=submit value="Set All Markers to Hidden">
+    </form>
+    <form action="{{ url_for('.set_all_visible') }}" method=post>
+        <input type=submit value="Set All Markers to Visible">
+    </form>
+
+{% endblock %}

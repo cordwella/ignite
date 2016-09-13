@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import AdminIndexView, BaseView, expose
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.actions import action
 from flask import session, flash, redirect, url_for, request, send_from_directory
 from hashids import Hashids
 from flask import current_app
@@ -99,3 +101,151 @@ class QRGenView(BaseView):
     def get_location(self):
         import os
         return os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+class MarkerView(ModelView):
+    page_size = 50
+    column_searchable_list = ['name', 'batch', 'location']
+    list_template = 'admin/marker_list.html'
+
+    @action('set_on', 'Activate', 'Are you sure you want to activate all of these markers?')
+    def action_activate(self, ids):
+        try:
+            query = Markers.query.filter(Markers.id.in_(ids))
+
+            count = 0
+            for marker in query.all():
+                marker.in_current_use = 1
+
+            flash("Markers set to active")
+            db.session.commit()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                raise
+            print(ex)
+            flash("Failed to update database")
+
+    @action('set_off', 'Deactivate', 'Are you sure you want to set all of these makers to inactive?')
+    def action_inactivate(self, ids):
+        try:
+            query = Markers.query.filter(Markers.id.in_(ids))
+
+            count = 0
+            for marker in query.all():
+                marker.in_current_use = 0
+
+            flash("Markers set to inactive")
+            db.session.commit()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                raise
+            print(ex)
+            flash("Failed to update database")
+
+    @action('hide', 'Set Hidden', 'Are you sure you want to hide the selected markers from the torch registry page?')
+    def action_hide(self, ids):
+        try:
+            query = Markers.query.filter(Markers.id.in_(ids))
+
+            count = 0
+            for marker in query.all():
+                marker.is_hidden = 1
+
+            flash("Markers set to hidden")
+            db.session.commit()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                raise
+            print(ex)
+            flash("Failed to update database")
+
+    @action('show', 'Set Visible', 'Are you sure you want to include the selected markers in the torch registry page?')
+    def action_make_visble(self, ids):
+        try:
+            query = Markers.query.filter(Markers.id.in_(ids))
+
+            count = 0
+            for marker in query.all():
+                marker.is_hidden = 0
+
+            flash("Markers set to hidden")
+            db.session.commit()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                raise
+            print(ex)
+            flash("Failed to update database")
+
+    @expose('/mass')
+    def mass_view(self):
+        """
+            Custom view for mass changing.
+        """
+        print(self.__dict__)
+        return self.render('admin/marker_mass.html')
+
+    @expose('/mass/can_scan', methods=['POST'])
+    def set_all_on(self):
+
+        try:
+            for marker in Markers.query.all():
+                marker.in_current_use = 1
+
+            flash("Markers set to active")
+            db.session.commit()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                raise
+            print(ex)
+            flash("Failed to update database")
+
+        return redirect(url_for('.mass_view'))
+
+    @expose('/mass/no_scan',  methods=['POST'])
+    def set_all_off(self):
+
+        try:
+            for marker in Markers.query.all():
+                marker.in_current_use = 0
+
+            flash("Markers set to inactive")
+            db.session.commit()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                raise
+            print(ex)
+            flash("Failed to update database")
+
+        return redirect(url_for('.mass_view'))
+
+    @expose('/mass/hide', methods=['POST'])
+    def set_all_hidden(self):
+        try:
+            for marker in Markers.query.all():
+                marker.is_hidden = 1
+
+            flash("Markers set to hidden")
+            db.session.commit()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                raise
+            print(ex)
+            flash("Failed to update database")
+
+
+        return redirect(url_for('.mass_view'))
+
+    @expose('/mass/visble', methods=['POST'])
+    def set_all_visible(self):
+        try:
+            for marker in Markers.query.all():
+                marker.is_hidden = 0
+
+            flash("Markers set to hidden")
+            db.session.commit()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                raise
+            print(ex)
+            flash("Failed to update database")
+
+        return redirect(url_for('.mass_view'))

@@ -1,0 +1,11 @@
+{% extends 'admin/model/list.html' %}
+{% block model_menu_bar_before_filters %}
+    {{ super() }}
+    <li>
+        <a href="{{ url_for('markers.mass_view') }}" title="Create New Record">Mass Edit</a></li>
+{% endblock %}
+
+{% block list_row_actions %}
+    {{ super() }}
+    {{ get_pk_value(row) }}
+{% endblock %}

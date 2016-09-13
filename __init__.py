@@ -6,7 +6,7 @@ from itsdangerous import URLSafeTimedSerializer
 from decorators import async, login_required
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from models import db, Houses, Markers, Users, MyAdminIndexView, QRGenView
+from models import db, Houses, Markers, Users, MyAdminIndexView, QRGenView, MarkerView
 import pymysql
 pymysql.install_as_MySQLdb()
 
@@ -18,7 +18,7 @@ admin = Admin(app, name="IGNITE Admin", index_view=MyAdminIndexView())
 db.init_app(app)
 admin.add_view(QRGenView(name='Generate QR codes', endpoint='gen'))
 admin.add_view(ModelView(Users, db.session))
-admin.add_view(ModelView(Markers, db.session))
+admin.add_view(MarkerView(Markers, db.session))
 admin.add_view(ModelView(Houses, db.session))
 
 @app.route('/adminlogin', methods=['POST', 'GET'])
