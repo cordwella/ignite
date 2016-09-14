@@ -1,11 +1,23 @@
 {% extends 'admin/master.html' %}
 
 {% block body %}
+    Welcome to the IGNITE administrative page.
+
+    <p> Here you can generate and download zip files with the QR codes for all of
+        the markers.</p>
     <form action="{{ url_for('gen.download_zip') }}" method=post>
         <input type=submit value="Download Zip of QR codes">
     </form>
     <form action="{{ url_for('gen.generate_zip') }}" method=post>
         <input type=submit value="Re-generate zip">
     </form>
-    <a href="{{ url_for('admin_logout')}}"> Logout </a>
+
+    <p> To add, delete, create or update user, house or marker data use the tabs up the top. Please note that you cannot change user passwords here as they are hashed, just get them to use the forgot password link. </p>
+
+    <p>This admin panel was built using Flask-Admin. </p>
+
+    <p>The source code for IGNITE is availible <a href="https://github.com/cordwella/ignite">here</a>.</p>
+
+    <p><a href="{{ url_for('admin_logout')}}"> Logout </a></p>
+
 {% endblock %}
