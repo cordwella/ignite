@@ -1,0 +1,19 @@
+{%if not page.custom_layout %}
+    {% extends "layout.html" %}
+    {% block title %}{{page.title}}{% endblock %}
+{% endif %}
+{% block body %}
+    {%if not page.custom_layout %}
+        {% if page.no_wrap %}
+            {{ page.content|safe }}
+        {% else %}
+            <section class="container content-section text-center">
+                <div class="row">
+                    {{ page.content|safe }}
+                </div>
+            </section>
+        {% endif %}
+    {% else %}
+        {{ page.content|safe}}
+    {% endif %}
+{% endblock %}

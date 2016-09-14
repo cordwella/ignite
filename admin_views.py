@@ -7,6 +7,8 @@ from flask import session, flash, redirect, url_for, request, send_from_director
 from hashids import Hashids
 from models import Houses, Markers, Users
 from sqlalchemy.event import listens_for
+from wtforms import TextAreaField
+from wtforms.widgets import TextArea
 import os
 import os.path as op
 
@@ -221,6 +223,12 @@ class MarkerView(ModelView):
 class UserView(ModelView):
     column_exclude_list = ['pwhash']
 
+
+class APageView(ModelView):
+    form_overrides = {
+        'content': TextAreaField
+    }
+
 class HouseView(ModelView):
     form_overrides = {
         'imagepath': form.FileUploadField
@@ -237,7 +245,7 @@ class HouseView(ModelView):
 
 @listens_for(Houses, 'after_delete')
 def del_image(mapper, connection, target):
-    if target.path:
+    if target.imagepath:
         # Delete image
         try:
             os.remove(op.join(file_path, target.path))

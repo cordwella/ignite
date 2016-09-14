@@ -37,6 +37,7 @@ First clone this repo into a folder of your choice:
 ```
 cd /folder/of/your/choice
 git clone https://github.com/cordwella/ignite.git
+cd ignite
 ```
 
 Make sure the permissions in this folder will allow the python program to read and write files.
@@ -104,6 +105,8 @@ A few things to note:
 - The house color is a hex code without the hash in front. E.g. ff0000, not #ff0000 or 'Red'
 - Changing a user's password here will not work as the passwords are hashed, if you want a password to be changed send a forgot password email.
 - There are mass editing options for markers, one of these is to set all to inactive (or active). This means they cannot be scanned, this is very useful at the start and at the end of your IGNITE event.
+- When adding static pages from the database try to keep the route to all lowercase letters.
+- You can put HTML in the content area, by default the code will wrap your text to the center of the page however if you do not want this simply tick the 'no wrap' box, if you want a completely blank page that your html goes to tick custom layout.
 
 Running from \_\_init.py\_\_ and using Flask's inbuilt web server is okay for testing however I would advise when you are running it as a big event that you use a proper webserver. You can find some tutorials about that [here](http://terokarvinen.com/2016/deploy-flask-python3-on-apache2-ubuntu) and [here](https://medium.com/@apatefraus/how-to-deploy-flask-on-ubuntu-with-python-3-and-nginx-fa48394deb7b#.izqpg59gh). There are lots of simular tutorials around but a number of them will be for python 2 so do be aware of this.
 

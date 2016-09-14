@@ -52,3 +52,14 @@ class Scans(db.Model):
 
     def __str__(self):
         return  self.users.uname + " scanned '" + self.markers.name + "'"
+
+class Pages(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), unique=True, nullable=False)
+    route = db.Column(db.String(15), unique=True, nullable=False)
+    content = db.Column(db.String(5000), nullable=False)
+    custom_layout = db.Column(db.Boolean, default=False)
+    no_wrap = db.Column(db.Boolean, default=False)
+
+    def __str__(self):
+        return  self.title

@@ -63,56 +63,46 @@
             <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
                 <ul class="nav navbar-nav">
                     <li><a href="{{ url_for('index')}}">Home</a></li>
-                    <li><a href="{{ url_for('about')}}">About</a></li>
 
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Gameplay<span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="{{ url_for('gameplay')}}#context">IGNITE Context</a></li>
-                            <li><a href="{{ url_for('gameplay')}}#howtoplaytext1">How to play - text</a></li>
-                            <li><a href="{{ url_for('gameplay')}}#howtoplayvideo">How to play - video</a></li>
-                        </ul>
+                        {% for page in get_pages() %}
+                            <li><a href="{{ url_for('db_page', route=page.route) }}">{{page.title}}</a></li>
+                        {% endfor %}
 
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Houses<span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
-                                <li><a href="{{ url_for('show_house', house_id=1)}}">Bledisloe</a></li>
-                                <li><a href="{{ url_for('show_house', house_id=3)}}">Fergusson</a></li>
-                                <li><a href="{{ url_for('show_house', house_id=2)}}">Jellicoe</a></li>
-                                <li><a href="{{ url_for('show_house', house_id=4)}}">Onslow</a></li>
+                                {% for house in get_houses() %}
+                                    <li><a href="{{ url_for('show_house', house_id=house.id) }}">{{house.name}}</a></li>
+                                {% endfor %}
                             </ul>
+                        </li>
 
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Intelligence<span class="caret"></span></a>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li><a href="{{ url_for('housegraph')}}">Which house is winning? Graph</a></li>
-                                    <li><a href="{{ url_for('topusers')}}">Who is the top explorer? Table</a></li>
-                                    <li><a href="{{ url_for('recent_scans_page')}}">Recent scans </a></li>
-                                    <li><a href="{{ url_for('torch_registry')}}">Torch Registry</a></li>
-                                </ul>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Intelligence<span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="{{ url_for('housegraph')}}">Which house is winning? Graph</a></li>
+                                <li><a href="{{ url_for('topusers')}}">Who is the top explorer? Table</a></li>
+                                <li><a href="{{ url_for('recent_scans_page')}}">Recent scans </a></li>
+                                <li><a href="{{ url_for('torch_registry')}}">Torch Registry</a></li>
+                            </ul>
+                        </li>
 
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Scanner<span class="caret"></span></a>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li><a href="https://play.google.com/store/apps/details?id=com.a13softdev.qrcodereader&hl=en" target="_blank">Google Android</a></li>
-                                        <li><a href="https://itunes.apple.com/nz/app/qr-code-reader-and-scanner/id388175979?mt=8" target="_blank">Apple ios</a></li>
-                                        <li><a href="https://webqr.com/" target="_blank">Web Browser</a></li>
-                                        <li><a href="https://www.microsoft.com/en-nz/store/apps/qr-code-reader/9wzdncrfj1s9" target="_blank">Windows Phone</a></li>
-                                    </ul>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Scanner<span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="https://play.google.com/store/apps/details?id=com.a13softdev.qrcodereader&hl=en" target="_blank">Google Android</a></li>
+                                <li><a href="https://itunes.apple.com/nz/app/qr-code-reader-and-scanner/id388175979?mt=8" target="_blank">Apple ios</a></li>
+                                <li><a href="https://webqr.com/" target="_blank">Web Browser</a></li>
+                                <li><a href="https://www.microsoft.com/en-nz/store/apps/qr-code-reader/9wzdncrfj1s9" target="_blank">Windows Phone</a></li>
+                            </ul>
+                        </li>
 
-                                    <li class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Support<span class="caret"></span></a>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li><a href="{{ url_for('support')}}#contact">Contact</a></li>
-                                            <li><a href="{{ url_for('support')}}#faq">FAQ</a></li>
-                                        </ul>
-
-                                        {% if not session.username %}
-                                        <li><a href="{{ url_for('login') }}">Login</a></li>
-                                        <li><a href="{{ url_for('add_user') }}">Create User</a></li>
-                                        {% else %}
-                                        <li><a href="{{ url_for('show_user_profile', user_id=session.user_id) }}">Hello, {{ session.username }}</a></li>
-                                        <li><a href="{{ url_for('logout') }}">Log Out</a></li> {% endif %}
+                        {% if not session.username %}
+                        <li><a href="{{ url_for('login') }}">Login</a></li>
+                        <li><a href="{{ url_for('add_user') }}">Create User</a></li>
+                        {% else %}
+                        <li><a href="{{ url_for('show_user_profile', user_id=session.user_id) }}">Hello, {{ session.username }}</a></li>
+                        <li><a href="{{ url_for('logout') }}">Log Out</a></li> {% endif %}
             </div>
         </div>
     </nav>

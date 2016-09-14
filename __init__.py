@@ -6,8 +6,8 @@ from itsdangerous import URLSafeTimedSerializer
 from decorators import async, login_required
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from models import db, Houses, Markers, Users
-from admin_views import MyAdminIndexView, QRGenView, MarkerView, UserView, HouseView
+from models import db, Houses, Markers, Users, Pages
+from admin_views import MyAdminIndexView, QRGenView, MarkerView, UserView, HouseView, APageView
 import pymysql
 pymysql.install_as_MySQLdb()
 
@@ -21,6 +21,7 @@ admin.add_view(QRGenView(name='Generate QR codes', endpoint='gen'))
 admin.add_view(UserView(Users, db.session))
 admin.add_view(MarkerView(Markers, db.session))
 admin.add_view(HouseView(Houses, db.session))
+admin.add_view(APageView(Pages, db.session))
 
 @app.route('/adminlogin', methods=['POST', 'GET'])
 def admin_login():
@@ -315,21 +316,16 @@ def utility_processor():
             graph_data.append(row)
         return render_template("time-graph.html", houses=houses, graph_data=graph_data)
 
-    return dict(recent_scans=recent_scans, generate_graph=generate_graph)
+    def get_pages():
+        return Pages.query.all()
 
-##STATIC PAGES
-@app.route('/about')
-def about():
-    return render_template('about.html')
+    def get_houses():
+        return Houses.query.all()
 
-@app.route('/gameplay')
-def gameplay():
-    return render_template('gameplay.html')
 
-@app.route('/support')
-def support():
-    return render_template('support.html')
+    return dict(recent_scans=recent_scans, generate_graph=generate_graph, get_pages=get_pages, get_houses=get_houses)
 
+##PAGES
 @app.route('/housegraph')
 def housegraph():
     return render_template('housegraph.html')
@@ -348,6 +344,10 @@ def topusers():
     users = query_db("SELECT * from users_with_house ORDER BY points DESC limit 30")
     return render_template('topuser.html', users=users)
 
+@app.route('/<route>')
+def db_page(route):
+    page = Pages.query.filter_by(route=route).first()
+    return render_template('page.html', page=page)
 
 ## Error Handlers
 @app.errorhandler(404)

@@ -1,13 +1,13 @@
--- MySQL dump 10.16  Distrib 10.1.13-MariaDB, for osx10.11 (x86_64)
+-- MySQL dump 10.15  Distrib 10.0.25-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: ignite
 -- ------------------------------------------------------
--- Server version	10.1.13-MariaDB
+-- Server version	10.0.25-MariaDB-0ubuntu0.16.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -43,7 +43,8 @@ CREATE TABLE `houses` (
   `desc` varchar(1000) DEFAULT NULL COMMENT 'Long description',
   `shortdesc` varchar(140) DEFAULT NULL COMMENT 'Short Description to appear on user & marker pages',
   `captain` varchar(100) DEFAULT NULL COMMENT 'Name of captain or mascot',
-  `color` char(6) DEFAULT 'FFFFFF' COMmENT 'Hex code of the team\'s color ',
+  `color` char(6) DEFAULT 'FFFFFF' COMMENT 'Hex code of the team''s color ',
+  `imagename` varchar(64) DEFAULT NULL COMMENT 'File name of house image',
   `imagepath` varchar(128) DEFAULT NULL COMMENT 'Path to house image',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
@@ -71,10 +72,10 @@ CREATE TABLE `markers` (
   `name` varchar(100) NOT NULL,
   `house_id` int(11) DEFAULT NULL,
   `point_value` int(3) DEFAULT '1',
-  `in_current_use` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'If set to false it will not allow users to scan it',
-  `is_hidden` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Determines wether or not to display it on the torch registry',
-  `batch` varchar(20) NULL COMMENT 'For determining whether it should be generated/printed at this time (admin use only) ',/* TODO: Table with FK? */
-  `location` varchar(15) NULL COMMENT 'Admin use, to remember where you have placed it, can be useful if you are wanting to do data analysis later',/* TODO: Table with FK? */
+  `in_current_use` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'If set to false it will not allow users to scan it',
+  `is_hidden` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Determines wether or not to display it on the torch registry',
+  `batch` varchar(20) DEFAULT NULL COMMENT 'For determining whether it should be generated/printed at this time (admin use only) ',
+  `location` varchar(15) DEFAULT NULL COMMENT 'Admin use, to remember where you have placed it, can be useful if you are wanting to do data analysis later',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `catergory_fk` (`house_id`),
@@ -88,7 +89,6 @@ CREATE TABLE `markers` (
 
 LOCK TABLES `markers` WRITE;
 /*!40000 ALTER TABLE `markers` DISABLE KEYS */;
-/*INSERT INTO `markers` VALUES (1,'Winds About The East Hills',1,1),(2,'Sounds of glorious carefree days',2,2),(3,'DOMELI!',3,3);*/
 /*!40000 ALTER TABLE `markers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -106,9 +106,40 @@ SET character_set_client = utf8;
   `house_id` tinyint NOT NULL,
   `point_value` tinyint NOT NULL,
   `house` tinyint NOT NULL,
-  `house_desc` tinyint NOT NULL
+  `house_desc` tinyint NOT NULL,
+  `is_hidden` tinyint NOT NULL,
+  `in_current_use` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+
+--
+-- Table structure for table `pages`
+--
+
+DROP TABLE IF EXISTS `pages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL COMMENT 'Title on browser',
+  `route` varchar(15) NOT NULL COMMENT 'Route from / in URL',
+  `content` varchar(12000) DEFAULT NULL,
+  `custom_layout` tinyint(1) DEFAULT '0',
+  `no_wrap` tinyint(1) DEFAULT '0' COMMENT 'Set to true if you want to use the layout (with the menu bar) but do no want to have any padding etc',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `title` (`title`),
+  UNIQUE KEY `route` (`route`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pages`
+--
+
+LOCK TABLES `pages` WRITE;
+/*!40000 ALTER TABLE `pages` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pages` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Temporary table structure for view `scan_info`
@@ -149,11 +180,11 @@ CREATE TABLE `scans` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `scans_once` (`user_id`,`marker_id`),
   KEY `marker_fk` (`marker_id`),
-  KEY (`user_id`),
-  KEY (`scan_time`),
+  KEY `user_id` (`user_id`),
+  KEY `scan_time` (`scan_time`),
   CONSTRAINT `marker_fk` FOREIGN KEY (`marker_id`) REFERENCES `markers` (`id`),
   CONSTRAINT `user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -226,7 +257,7 @@ SET character_set_client = utf8;
   `house_id` tinyint NOT NULL,
   `points` tinyint NOT NULL,
   `name` tinyint NOT NULL,
-  `desc` tinyint NOT NULL
+  `house_desc` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
@@ -263,7 +294,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `markers_with_houses` AS select `markers`.`id` AS `id`,`markers`.`name` AS `name`,`markers`.`house_id` AS `house_id`,`markers`.`point_value` AS `point_value`,`houses`.`name` AS `house`,`houses`.`shortdesc` AS `house_desc`, `markers`.`is_hidden` as `is_hidden`, `markers`.`in_current_use` AS `in_current_use` from (`markers` left join `houses` on((`houses`.`id` = `markers`.`house_id`))) */;
+/*!50001 VIEW `markers_with_houses` AS select `markers`.`id` AS `id`,`markers`.`name` AS `name`,`markers`.`house_id` AS `house_id`,`markers`.`point_value` AS `point_value`,`houses`.`name` AS `house`,`houses`.`shortdesc` AS `house_desc`,`markers`.`is_hidden` AS `is_hidden`,`markers`.`in_current_use` AS `in_current_use` from (`markers` left join `houses` on((`houses`.`id` = `markers`.`house_id`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -315,4 +346,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-05-10 16:00:18
+-- Dump completed on 2016-09-14 15:37:22
