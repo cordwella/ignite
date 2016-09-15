@@ -166,47 +166,6 @@ a.orange:hover, a.orange:focus {
     color: #FFF;
 
 }
-a.Jellicoe {
-    color: #52ff00;
-    -webkit-transition: all .2s ease-in-out;
-    -moz-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
-}
-a.Jellicoe:hover, a.Jellicoe:focus {
-    color: #FFF;
-
-}
-
-a.Bledisloe {
-    color: #ff4500;
-    -webkit-transition: all .2s ease-in-out;
-    -moz-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
-}
-a.Bledisloe:hover, a.Bledisloe:focus {
-    color: #fff;
-}
-
-a.Fergusson {
-    color: #e3ff00;
-    -webkit-transition: all .2s ease-in-out;
-    -moz-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
-}
-a.Fergusson:hover, a.Fergusson:focus {
-    color: #fff;
-}
-
-a.Onslow {
-    color: #2df2ff;
-    -webkit-transition: all .2s ease-in-out;
-    -moz-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
-}
-a.Onslow:hover, a.Fergusson:focus {
-    color: #fff;
-}
-
 
 .light {
     font-weight: 400;
