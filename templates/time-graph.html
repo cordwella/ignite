@@ -47,8 +47,12 @@
                     },
                 {% endfor %}
             },
+            chartArea: {
+                backgroundColor: '#000000'
+            },
+            height: 500,
+            backgroundColor: '#000000'
 
-            height: 500
         };
 
         var chart = new google.charts.Line(document.getElementById('linechart_material'));
