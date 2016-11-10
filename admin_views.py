@@ -48,7 +48,12 @@ class QRGenView(BaseView):
             buffer = io.BytesIO()
             qrcode = pyqrcode.create(marker.url)
             qrcode.svg(buffer, scale=5, background="white")
-            zipper.writestr(str(marker.id)+"-"+marker.name+"-"+str(marker.houses.name)+".svg", buffer.getvalue())
+            housename = "nohouse"
+            try:
+                housename = marker.houses.name
+            except:
+                pass
+            zipper.writestr(str(marker.id)+"-"+marker.name+"-"+housename+".svg", buffer.getvalue())
         zipper.close()
 
     @expose('/gen', methods=['POST'])
