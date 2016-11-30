@@ -17,7 +17,7 @@ class Houses(db.Model):
 
 class Markers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(10), unique=True, nullable=False)
+    name = db.Column(db.String(100), unique=True, nullable=False)
     point_value = db.Column(db.Integer, nullable=False)
     house_id = db.Column(db.Integer, db.ForeignKey(Houses.id), nullable=True)
     in_current_use = db.Column(db.Boolean, default=True)
@@ -57,7 +57,7 @@ class Pages(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), unique=True, nullable=False)
     route = db.Column(db.String(15), unique=True, nullable=False)
-    content = db.Column(db.String(5000), nullable=False)
+    content = db.Column(db.String(12000), nullable=False)
     custom_layout = db.Column(db.Boolean, default=False)
     no_wrap = db.Column(db.Boolean, default=False)
 
