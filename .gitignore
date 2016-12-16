@@ -5,4 +5,4 @@ __pycache__/
 **/.DS_Store
 *.pyc
 .DS_Store
-static/upload/
+ignite/static/upload/

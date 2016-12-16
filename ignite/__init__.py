@@ -200,29 +200,33 @@ def send_email(toadrr,message, subject, fromaddr="ignite.wegc@gmail.com",):
 @app.route('/user/<int:user_id>')
 def show_user_profile(user_id):
     # show the user profile for that user
-    try:
-        user = query_db("SELECT * FROM users_with_house WHERE id = %s", [user_id])[0]
-    except:
-        abort(404)
+    user = Users.query.filter_by(id=user_id).first_or_404()
+    #try:
+    #    user = query_db("SELECT * FROM users_with_house WHERE id = %s", [user_id])[0]
+    #except:
+    #    abort(404)
     return render_template("user.html", user=user)
 
 @app.route('/torch/<int:marker_id>')
 def show_marker(marker_id):
     # show the marker profile
-    try:
-        marker = query_db("SELECT * FROM markers_with_houses WHERE id = %s", [marker_id])[0]
-    except:
-        abort(404)
+    #try:
+    #    marker = query_db("SELECT * FROM markers_with_houses WHERE id = %s", [marker_id])[0]
+    #except:
+    #    abort(404)
+    marker = Markers.query.filter_by(id=marker_id).first_or_404()
     return render_template("marker.html", marker=marker)
 
 @app.route('/house/<int:house_id>')
 def show_house(house_id):
     # show the user profile for that user
-    try:
-        house = query_db("SELECT * FROM houses WHERE id = %s", [house_id])[0]
-    except:
-        abort(404)
+
+    house = Houses.query.filter_by(id=house_id).first_or_404()
     return render_template("house.html", house=house)
+
+    #    house = query_db("SELECT * FROM houses WHERE id = %s", [house_id])[0]
+    #except:
+    #    abort(404)
 
 @app.route('/scan/<scan_id>')
 @login_required
@@ -363,7 +367,7 @@ def error_405(error):
     return render_template('errorpage.html', errorcode="405", message="What are you even trying to do? Wrong method"), 405
 
 @app.errorhandler(500)
-def error_401(error):
+def error_500(error):
     return render_template('errorpage.html', errorcode="500", message="Error (sorry, contact the site admins for more info)"), 500
 
 

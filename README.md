@@ -37,7 +37,7 @@ First clone this repo into a folder of your choice:
 ```
 cd /folder/of/your/choice
 git clone https://github.com/cordwella/ignite.git
-cd ignite
+cd ignite/ignite
 ```
 
 Make sure the permissions in this folder will allow the python program to read and write files.
@@ -122,7 +122,7 @@ A few things to note:
 
 Running from \_\_init.py\_\_ and using Flask's inbuilt web server is okay for testing however I would advise when you are running it as a big event that you use a proper webserver. You can find some tutorials about that [here](http://terokarvinen.com/2016/deploy-flask-python3-on-apache2-ubuntu) and [here](https://medium.com/@apatefraus/how-to-deploy-flask-on-ubuntu-with-python-3-and-nginx-fa48394deb7b#.izqpg59gh). There are lots of similar tutorials around but a number of them will be for python 2 so do be aware of this.
 
-Another useful piece of information would be the [flask docs](http://flask.pocoo.org/docs/), if you are having issues or want to extend IGNITE further. 
+Another useful piece of information would be the [flask docs](http://flask.pocoo.org/docs/), if you are having issues or want to extend IGNITE further.
 
 #### A note on sending emails
 I have set up the email sending function to be handeled by Gmail's SMTP server, as I did not have access to my own one. If you wish to use a different one you just need to change the server in the send_email function in \_\_init.py\_\_, also you will need to change the settings
