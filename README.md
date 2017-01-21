@@ -9,6 +9,8 @@ The Facebook page that we updated during the week we ran ignite can be found [he
 
 This version has been updated with extra administrative features, and a number of other improvements over the original one used the first year at WEGC .
 
+![WEGC IGNITE Screenshot](https://cloud.githubusercontent.com/assets/10441829/20208092/974e8d2e-a850-11e6-9218-e3b2ade544de.png)
+
 ## Python Libraries
 Ignite is built for Python 3.
 Ignite uses the [Flask](http://flask.pocoo.org/) web framework, MariaDB as it's database (accessed with PyMySQL and sqlalchemy), as well as the pyqrcode, hashids, flask-admin, and bycrypt python libraries.
