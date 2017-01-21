@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+
 # Create models
 class Houses(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -14,6 +15,7 @@ class Houses(db.Model):
 
     def __str__(self):
         return self.name
+
 
 class Markers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -29,6 +31,7 @@ class Markers(db.Model):
     def __str__(self):
         return self.name
 
+
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     uname = db.Column(db.String(30), unique=True, nullable=False)
@@ -41,17 +44,20 @@ class Users(db.Model):
     def __str__(self):
         return self.uname
 
+
 class Scans(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(Users.id), nullable=False)
-    marker_id = db.Column(db.Integer, db.ForeignKey(Markers.id), nullable=False)
+    marker_id = db.Column(db.Integer, db.ForeignKey(Markers.id),
+                          nullable=False)
     point_value = db.Column(db.Integer, nullable=False)
     scan_time = db.Column(db.DateTime)
     users = db.relationship('Users', backref=db.backref('Scans'))
     markers = db.relationship('Markers', backref=db.backref('Scans'))
 
     def __str__(self):
-        return  self.users.uname + " scanned '" + self.markers.name + "'"
+        return self.users.uname + " scanned '" + self.markers.name + "'"
+
 
 class Pages(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -62,4 +68,4 @@ class Pages(db.Model):
     no_wrap = db.Column(db.Boolean, default=False)
 
     def __str__(self):
-        return  self.title
+        return self.title
