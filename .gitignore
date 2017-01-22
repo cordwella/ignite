@@ -9,3 +9,4 @@ ignite/static/upload/
 *egg-info*
 build/
 dist/
+*.db

@@ -20,7 +20,7 @@
                         <tr>
                             <td> {{ loop.index }}</td>
                             <td><a class="orange" href="{{ url_for('show_user_profile', user_id=user.id) }}">{{user.uname}}</a></td>
-                            <td><a class="{{ user.name }}" href="{{ url_for('show_house', house_id=user.house_id)}}">{{user.name}} {# house name #}</a></td>
+                            <td><a class="{{ user.house.name }}" href="{{ url_for('show_house', house_id=user.house.id)}}">{{user.house.name}}</a></td>
                             <td>{{user.points}}</td>
                         </tr>
                         {% endfor %}

@@ -3,4 +3,4 @@ Flask-Admin>=1.4.2
 Flask-Bcrypt>=0.7.1
 Flask-SQLAlchemy>=2.1
 hashids>=1.2.0
-PyMySQL>=0.7.9
+PyQRCode>=1.2.1

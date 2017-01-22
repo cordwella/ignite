@@ -2,18 +2,19 @@ from flask import Flask, request, session, redirect, url_for, \
     abort, render_template, flash
 from flask_bcrypt import Bcrypt
 from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 
-import pymysql
 from itsdangerous import URLSafeTimedSerializer
 from hashids import Hashids
+from sqlalchemy.exc import IntegrityError
 
-from ignite.decorators import async, login_required
-from ignite.models import db, Houses, Markers, Users, Pages
+from ignite.decorators import login_required
+from ignite.models import db, Houses, Markers, Users, Pages, Scans
 from ignite.admin_views import (MyAdminIndexView, QRGenView, MarkerView,
                                 UserView, HouseView, APageView)
+from ignite.utils import (clean_str, is_clean_username,
+                          email_validate, send_email)
 
-
-pymysql.install_as_MySQLdb()
 
 app = Flask(__name__)
 app.config.from_pyfile('application.cfg', silent=True)
@@ -26,6 +27,7 @@ admin.add_view(UserView(Users, db.session))
 admin.add_view(MarkerView(Markers, db.session))
 admin.add_view(HouseView(Houses, db.session))
 admin.add_view(APageView(Pages, db.session))
+admin.add_view(ModelView(Scans, db.session))
 
 
 @app.route('/adminlogin', methods=['POST', 'GET'])
@@ -50,8 +52,8 @@ def admin_logout():
 
 @app.route('/')
 def index():
-    data = query_db("SELECT * FROM house_points")
-    return render_template('index.html', house_points=data)
+    houses = Houses.query.all()
+    return render_template('index.html', house_points=houses)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -64,9 +66,9 @@ def login(nextu=None):
         username = clean_str(request.form['username'])
         password = clean_str(request.form['password'])
         if '@' in username:
-            data = query_db('SELECT * FROM users WHERE email = %s', [username])
+            data = Users.query.filter_by(email=username).all()
         else:
-            data = query_db('SELECT * FROM users WHERE uname = %s', [username])
+            data = Users.query.filter_by(uname=username).all()
 
         if len(data) == 0:
             error = 'Invalid username'
@@ -96,6 +98,7 @@ def add_user():
         password = clean_str(request.form['password'])
         house_id = request.form['house']
         email = request.form['email']
+
         if not is_clean_username(username):
             error = ("Username must contain only alpha-numeric characters, "
                      "and must be between 5 and 20 characters")
@@ -103,37 +106,41 @@ def add_user():
             error = "Invalid Email Address"
         elif username and password:
             try:
-                query_db(
-                    'INSERT INTO users(uname, pwhash, email, house_id) '
-                    'values(%s, %s, %s, %s)',
-                    [username, bcrypt.generate_password_hash(password),
-                     email, house_id])
+                new_user = Users(
+                    uname=username,
+                    pwhash=bcrypt.generate_password_hash(password),
+                    email=email,
+                    house_id=house_id)
+
+                db.session.add(new_user)
+                db.session.commit()
 
                 session['username'] = username
-                session['user_id'] = query_db(
-                    'SELECT id FROM users where uname = %s',
-                    [username])[0]['id']
-                flash('You were logged in')
-                house = query_db('SELECT name FROM houses where id = %s',
-                                 [house_id])[0]['name']
+                session['user_id'] = Users.query.filter_by(
+                    uname=username).first().id
+
+                flash('You were logged in id: %s' % session['user_id'])
+
+                house = Houses.query.filter_by(id=house_id).first()
                 msg = render_template("newaccount.html", username=username,
                                       email=email, house=house)
                 send_email(email, msg, 'New Account Notification | Ignite')
                 flash("Email Sent to " + email)
                 return redirect(url_for('index'))
-            except pymysql.Error as e:
-                if e.args[0] == 1062:
-                    if 'email' in e.args[1]:
-                        error = ("Email already in use. "
-                                 "You may already have an account. "
-                                 "Try the forgot password link below")
-                    elif 'uname' in e.args[1]:
-                        error = "Username already in use. Be more creative"
+            except IntegrityError as e:
+                print(e.args)
+                if 'email' in str(e.args):
+                    error = ("Email already in use. "
+                             "You may already have an account. "
+                             "Try the forgot password link below")
+                elif 'uname' in str(e.args):
+                    error = "Username already in use. Be more creative"
                 else:
-                    error = "Database Error. %s %s" % (e.args[0], e.args[1])
+                    error = "Database Error. %s" % e.args
+                db.session.rollback()
         else:
             error = "Invalid Username Or Password"
-    houses = query_db("SELECT * FROM houses")
+    houses = Houses.query.all()
     return render_template('adduser.html', error=error, houses=houses,
                            email=email, username=username)
 
@@ -156,8 +163,7 @@ def lost_password():
         email = request.form['email']
         # check email address in db and get username
         try:
-            username = query_db("SELECT * FROM users WHERE email = %s",
-                                [email])[0]['uname']
+            user = Users.query.filter_by(email=email).first()
         except:
             flash("Email Address not found")
             return render_template('lostpass.html')
@@ -168,7 +174,7 @@ def lost_password():
                               _external=True)
 
         msg = render_template("lostpassemail.html", confirm_url=confirm_url,
-                              username=username)
+                              username=user.uname)
         send_email(email, msg, "Forgot Password? | Ignite")
         flash("Email Sent to " + email)
         return redirect(url_for('login'))
@@ -181,8 +187,7 @@ def resetpassword(serial_tag):
     ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
     try:
         email = ts.loads(serial_tag, max_age=14400)
-        username = query_db("SELECT * FROM users WHERE email = %s",
-                            [email])[0]['uname']
+        user = Users.query.filter_by(email=email)
     except:
         abort(404)
 
@@ -190,45 +195,18 @@ def resetpassword(serial_tag):
         password = request.form['password']
         if password == request.form['confpassword']:
             try:
-                query_db(
-                    'UPDATE users SET pwhash = %s WHERE email = %s',
-                    [bcrypt.generate_password_hash(password), email])
+                user.pwhash = bcrypt.generate_password_hash(password)
+                db.session.add(user)
+                db.commit()
             except:
                 abort(500)
+                db.session.rollback()
+
             flash("Password has been reset")
             return redirect(url_for('login'))
         flash("Passwords do not match")
-    return render_template("resetpass.html", username=username,
+    return render_template("resetpass.html", username=user.uname,
                            url=request.url)
-
-
-@async
-def send_email(toadrr, message, subject, fromaddr=app.config['EMAIL_ADDR']):
-    import smtplib
-    from email.mime.multipart import MIMEMultipart
-    from email.mime.text import MIMEText
-
-    msg = MIMEMultipart('alternative')
-    msg['Subject'] = subject
-    msg['From'] = "Ignite Admin"
-    msg['To'] = toadrr
-    part2 = MIMEText(message, 'html')
-    msg.attach(part2)
-
-    username = app.config['EMAIL_USER']
-    password = app.config['EMAIL_PASS']
-
-    # Sending the mail
-
-    server = smtplib.SMTP('smtp.gmail.com:587')
-    server.starttls()
-
-    server.login(username, password)
-    if app.config['DEBUG']:
-        server.sendmail(fromaddr, app.config['TEST_EMAIL'], msg.as_string())
-    else:
-        server.sendmail(fromaddr, msg['To'], msg.as_string())
-    server.quit()
 
 
 @app.route('/user/<int:user_id>')
@@ -255,25 +233,22 @@ def scan_marker(scan_id):
     hashid = Hashids(min_length=6, salt=app.config['HASHID_KEY'])
     try:
         marker_id = hashid.decode(scan_id)[0]
-        is_active = query_db("SELECT * FROM markers WHERE id = %s",
-                             [marker_id])[0]['in_current_use']
+        marker = Markers.query.filter(id=marker_id).first_or_404()
     except:
         abort(404)
 
-    if is_active:
+    if marker.in_current_use:
         try:
-            query_db(
-                "INSERT INTO scans (user_id, marker_id) values(%s, %s)",
-                [str(session.get('user_id')), str(marker_id)])
+            scan = Scans(user_id=session.get('user_id'),
+                         marker_id=marker.id)
+            db.session.add(scan)
+            db.commit()
             flash("Congratulations on scanning this marker!")
 
-        except pymysql.Error as e:
-            if e.args[0] == 1452:
-                abort(404)
-            elif e.args[0] == 1062:
-                flash("You've already scanned this torch.")
-            else:
-                flash("Database Error. %s %s" % (e.args[0], e.args[1]))
+        except IntegrityError as e:
+            print(e.args)
+            flash("You've already scanned this torch.")
+
     else:
         flash("Unfortunatley this marker is incative at this time and "
               "therefore you cannot scan it.")
@@ -287,23 +262,28 @@ def utility_processor():
     def recent_scans(column="all", wid=None, amount=20):
         # TODO: date-timehandeling
         data = []
-        if(column == "user"):
-            data = query_db("SELECT * FROM scan_info WHERE user_id = %s "
-                            "order by scan_time desc limit 20", [wid])
-        elif(column == "house"):
-            data = query_db("SELECT * FROM scan_info WHERE uhouse_id = %s "
-                            "order by scan_time desc limit 20", [wid])
-        elif(column == "marker"):
-            data = query_db("SELECT * FROM scan_info WHERE marker_id = %s "
-                            "order by scan_time desc limit 20", [wid])
+        if column == "user":
+            # data = User.query.filter_by(user_id=wid).order_by().limit(20)
+            # data = query_db("SELECT * FROM scan_info WHERE user_id = %s "
+            #                "order by scan_time desc limit 20", [wid])
+            data = Scans.query.filter_by(user_id=wid).order_by(
+                Scans.scan_time.desc()).limit(20)
+        elif column == "house":
+            data = Scans.query.filter(
+                Scans.user.has(house_id=wid)).order_by(
+                Scans.scan_time.desc()).limit(20)
+        elif column == "marker":
+            data = Scans.query.filter_by(marker_id=wid).order_by(
+                Scans.scan_time.desc()).limit(20)
         else:
-            data = query_db("SELECT * FROM scan_info order by scan_time "
-                            "desc limit 20")
+            data = Scans.query.order_by(
+                Scans.scan_time.desc()).limit(20)
         return render_template("recent_scans.html", scans=data)
 
     def generate_graph():
         # TODO(amelia): Re-write all of this. I no longer understand it at all
-        houses = query_db("SELECT * FROM houses ORDER BY name")
+        return
+        """ houses = query_db("SELECT * FROM houses ORDER BY name")
         data = []
         graph_data = []
 
@@ -359,6 +339,9 @@ def utility_processor():
         return render_template("time-graph.html", houses=houses,
                                graph_data=graph_data)
 
+        """
+        # """
+
     def get_pages():
         return Pages.query.all()
 
@@ -382,14 +365,13 @@ def recent_scans_page():
 
 @app.route('/torch_registry')
 def torch_registry():
-    torches = query_db("SELECT * from markers_with_houses WHERE is_hidden = 0")
+    torches = Markers.query.filter_by(is_hidden=False)
     return render_template('torch_registry.html', torches=torches)
 
 
 @app.route('/topusers')
 def topusers():
-    users = query_db(
-        "SELECT * from users_with_house ORDER BY points DESC limit 30")
+    users = Users.query.order_by(Users.points.desc()).limit(30)
     return render_template('topuser.html', users=users)
 
 
@@ -428,63 +410,16 @@ def error_500(error):
         message="Error (sorry, contact the site admins for more info)"), 500
 
 
-def connect_db():
-    return pymysql.connect(host=app.config['DB_HOST'],
-                           user=app.config['DB_USER'],
-                           passwd=app.config['DB_PASS'],
-                           db=app.config['DB_NAME'])
-
-
-def query_db(query, values=None):
-    """ Query DB & commit """
-    db = connect_db()
-    cur = db.cursor(pymysql.cursors.DictCursor)
-
-    if isinstance(values, (list, tuple)):
-        cur.execute(query, values)
-    else:
-        cur.execute(query)
-    output = cur.fetchall()
-    db.commit()
-    db.close()
-    return output
-
-
-# TODO: this, better, less convoluted
-def clean_str(s):
-    # s.decode('ascii')
-    # Check For html
-    return s
-
-
-def is_clean_username(s):
-    """ Checks that it does not contain 'banned words' as defined in a file
-    and is between expected lengths, and is alpha numeric
-    """
-    import pkg_resources
-    import os
-    resource_package = __name__
-    resource_path = os.path.join('banned-words.csv')
-    text = str(pkg_resources.resource_string(resource_package, resource_path))
-    banned_words = text.splitlines()
-    for word in banned_words:
-        if word in s:
-            return False
-    return s.isalnum() and len(s) >= 5 and len(s) <= 20
-
-
-def bad_password_check(s):
-    if(len(clean_str(s)) >= 5):
-        return clean_str(s)
-    return False
-
-
-def email_validate(s):
-    import re
-    return re.match("[^@]+@[^@]+\.[^@]+", s) and clean_str(s)
-
-if __name__ == '__main__':
+def main():
     if(app.config.get('PORT')):
         app.run(host='0.0.0.0', port=app.config.get('PORT'))
     else:
         app.run(host='0.0.0.0')
+
+
+def init_db():
+    with app.app_context():
+        db.create_all(app=app)
+
+if __name__ == '__main__':
+    main()

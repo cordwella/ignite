@@ -2,13 +2,12 @@ from flask_admin import AdminIndexView, BaseView, expose, form
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.actions import action
 from flask import (current_app, session, flash, redirect, url_for,
-                   request, send_from_directory)
+                   request, send_from_directory, send_file)
 from hashids import Hashids
-from sqlalchemy.event import listens_for
 from wtforms import TextAreaField
 import os
 
-from ignite.models import Houses, Markers
+from ignite.models import Markers, db
 
 
 file_path = os.path.join(os.path.dirname(__file__), 'static/upload')
@@ -16,6 +15,44 @@ try:
     os.mkdir(file_path)
 except OSError:
     pass
+
+
+def gen_zip(markers, in_memory=False):
+    import pyqrcode
+    from zipfile import ZipFile
+    import io
+    import os
+
+    # This ensures that it is in the package directory rather than just cwd
+    if in_memory:
+        zipper_file = io.BytesIO()
+        zipper = ZipFile(zipper_file)
+    else:
+        __location__ = os.path.realpath(
+            os.path.join(os.getcwd(), os.path.dirname(__file__)))
+        zipper = ZipFile(os.path.join(__location__, 'markers.zip'), 'w')
+
+    hashid = Hashids(min_length=6, salt=current_app.config['HASHID_KEY'])
+    for i in range(0, len(markers)):
+        marker = markers[i]
+        marker.url = url_for('scan_marker',
+                             scan_id=hashid.encode(marker.id),
+                             _external=True)
+        buffer = io.BytesIO()
+        qrcode = pyqrcode.create(marker.url)
+        qrcode.svg(buffer, scale=5, background="white")
+        housename = "nohouse"
+        try:
+            housename = marker.houses.name
+        except:
+            pass
+        zipper.writestr(str(marker.id) + "-" +
+                        marker.name + "-" +
+                        housename + ".svg", buffer.getvalue())
+    zipper.close()
+
+    if in_memory:
+        return zipper_file
 
 
 class MyAdminIndexView(AdminIndexView):
@@ -33,37 +70,10 @@ class QRGenView(BaseView):
     def index(self):
         return self.render('admin/index.html')
 
-    def gen_zip(self, markers):
-        import pyqrcode
-        from zipfile import ZipFile
-        import io
-
-        # This ensures that it is in the package directory rather than just cwd
-        __location__ = self.get_location()
-        zipper = ZipFile(os.path.join(__location__, 'markers.zip'), 'w')
-        hashid = Hashids(min_length=6, salt=current_app.config['HASHID_KEY'])
-        for i in range(0, len(markers)):
-            marker = markers[i]
-            marker.url = url_for('scan_marker',
-                                 scan_id=hashid.encode(marker.id),
-                                 _external=True)
-            buffer = io.BytesIO()
-            qrcode = pyqrcode.create(marker.url)
-            qrcode.svg(buffer, scale=5, background="white")
-            housename = "nohouse"
-            try:
-                housename = marker.houses.name
-            except:
-                pass
-            zipper.writestr(str(marker.id) + "-" +
-                            marker.name + "-" +
-                            housename + ".svg", buffer.getvalue())
-        zipper.close()
-
     @expose('/gen', methods=['POST'])
     def generate_zip(self):
         markers = Markers.query.all()
-        self.gen_zip(markers)
+        gen_zip(markers)
         flash("Currently generating .zip in the background, "
               "please wait a few minutes")
         return redirect(url_for('admin.index'))
@@ -160,6 +170,19 @@ class MarkerView(ModelView):
                 raise
             print(ex)
             flash("Failed to update database")
+
+    @action('gencode', 'Generate QR Codes',
+            'Do you want to generate QR codes for the selected '
+            'markers?')
+    def action_generate_codes(self, ids):
+        markers = Markers.query.filter(Markers.id.in_(ids))
+
+        zip_file = gen_zip(markers)
+
+        flash("Codes generated")
+        return send_file(zip_file,
+                         attachment_filename="codes.zip",
+                         as_attachment=True)
 
     @expose('/mass')
     def mass_view(self):
@@ -258,20 +281,3 @@ class HouseView(ModelView):
             'allow_overwrite': False
         }
     }
-
-
-@listens_for(Houses, 'after_delete')
-def del_image(mapper, connection, target):
-    if target.imagepath:
-        # Delete image
-        try:
-            os.remove(op.join(file_path, target.path))
-        except OSError:
-            pass
-
-        # Delete thumbnail
-        try:
-            os.remove(op.join(file_path,
-                              form.thumbgen_filename(target.path)))
-        except OSError:
-            pass

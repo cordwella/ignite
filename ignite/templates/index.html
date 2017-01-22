@@ -17,7 +17,7 @@
                         <p class="intro-text"><strong>Current Scores</strong><br>
 
                               {% for house in house_points %}
-                                  <a class="{{ house.name }}" href="{{ url_for('show_house', house_id=house.house_id)}}">{{ house.name }}</a> : {{ house.points }} <br>
+                                  <a class="{{ house.name }}" href="{{ url_for('show_house', house_id=house.id)}}">{{ house.name }}</a> : {{ house.points }} <br>
                               {% endfor %}
 
                            </p>

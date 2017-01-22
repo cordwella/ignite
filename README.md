@@ -15,7 +15,7 @@ This version has been updated with extra administrative features, and a number o
 Ignite is built for Python 3.
 Ignite uses the [Flask](http://flask.pocoo.org/) web framework, MariaDB as it's database (accessed with PyMySQL and sqlalchemy), as well as the pyqrcode, hashids, flask-admin, and bycrypt python libraries.
 
-Ignite can be started by running 'python \_\_init\_\_.py' from the directory in which it is saved.
+Ignite can be started by running 'ignite-run' from the directory in which it is saved.
 
 However, it is advisable that when running Ignite as an event that an external server is used rather than the default one that flask is shipped with.
 
@@ -46,7 +46,7 @@ Make sure the permissions in this folder will allow the python program to read a
 
 Then install the necessary python libraries (or install python first if necessary). The list of the libraries are inside requirements.txt
 
-If you want to you can use a [virtual environment](https://realpython.com/blog/python/python-virtual-environments-a-primer/).
+If you want to you can use a [virtual environment](https://realpython.com/blog/python/python-virtual-environments-a-primer/). PyVenv is used here as IGNITE has only been tested running under python3.
 
 ```
 pyvenv venv
@@ -65,27 +65,9 @@ sudo apt-get python-dev
 sudo apt-get libffi-dev
 ```
 
-The next step is installing and setting up the database. You can use either MySQL or it's drop in replacement Mariadb.
+The next step is installing and setting up the database. Ignite uses SQLalchemy for database access, so it will work with most databases. If you are installing this as a development server I would recommend sqlite.
 
-```
-sudo apt-get install mariadb-server
-```
-
-Then set up a database for ignite and inside run `source ignite.sql`. This file will set up all of the database tables. (You can access mariadb by running `mysql <databasename> -u <username> -p`).
-
-EG.
-```
-mysql -u root -p
-create database ignite;
-use ignite;
-source ignite.sql
-```
-
-[Official MySQL database documentation.](http://dev.mysql.com/doc/mysql-getting-started/en/)
-
-From here assuming all went well the next step is to create a configuration file, -'application.cfg'.
-
-This includes information for logins for the database and admin panel.
+Then you must setup a configuration file - 'application.cfg', in the same directory as the ignite.py files.
 
 It should contain these variables:
 ```
@@ -93,14 +75,11 @@ SECRET_KEY = secret key for session data etc
 HASHID_KEY = key for the hashids which are used to generate the qrcode
 ADMIN_UNAME = admin panel username
 ADMIN_PWORD = admin panel password
-DB_HOST = Database host (probably localhost)
-DB_NAME = Database name
-DB_USER = Database username
-DB_PASS = Database password
 EMAIL_USER = Gmail email username (for sending emails outwards)
 EMAIL_PASS = email password
+FROM_EMAIL = the email that will show up as the from email
 
-SQLALCHEMY_DATABASE_URI = in the form "mysql://DB_USER:DB_PASS@DB_HOST/DB_NAME"
+SQLALCHEMY_DATABASE_URI = "sqlite:///db.sqlite3"
 
 DEBUG = True if this is a test server
 TEST_EMAIL = Your email if you are wanting to test emails
@@ -109,9 +88,17 @@ PORT = Optional addition port number that the server will run on (Flask defaults
 
 PLEASE NOTE: The config file is a python file so strings need to be in quote marks. More information about config files are available [here](http://flask.pocoo.org/docs/0.11/config/).
 
-(I am aware that having two different things for the database is annoying, and that I shouldn't be using two different libraries for it and I am planning on transferring all of the pyMySQL code to sqlalchemy but that may take me a little while)
+Install the Ignite helper commands with 'python3 setup.py install'.
 
-At this point if you run \_\_init.py\_\_, all going well you should have a server running Ignite (Flask will spit out the ip and port address in the terminal). Test it out to make sure you don't get any errors. However it will have no data about houses or markers. To add these you can access the admin panel by going YOUR_URL/admin.
+To setup the tables in the database run 'ignite-db-setup'.
+
+(If you are not using sqlite you will need to setup a database before running these commands.)
+
+To start ignite on the flask development server run 'ignite-run'. This will start the server on the port specified in your config, and can be accessed at localhost or your server's IP address.
+
+## Admin Panel
+
+There is an admin panel built in to help with generating data. This is accesssable at /adminlogin. The passwords are the passwords specified in the config,
 
 The admin panel has options to do all of the general CRUD operations on the database, including image uploads for the house pages.
 

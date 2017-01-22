@@ -19,8 +19,10 @@
                 <tr>
                     <td> {{torch.id}}</td>
 
-                    <td> <a class="orange" href="{{ url_for('show_marker', marker_id=torch.id) }}">{{torch.name}}</a></td>
-                    <td> {% if torch.house %}<a class="{{ torch.house }}" href="{{ url_for('show_house', house_id=torch.house_id)}}">{{torch.house}}</a>
+                    <td>
+                        <a class="orange" href="{{ url_for('show_marker', marker_id=torch.id) }}"> {{torch.name}} </a>
+                    </td>
+                    <td> {% if torch.house.name %}<a class="{{ torch.house.name }}" href="{{ url_for('show_house', house_id=torch.house.id)}}">{{torch.house.name}}</a>
                     {% else %}
                     No House {% endif %}</td>
                     <td> {{torch.point_value}}</td>
