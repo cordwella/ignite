@@ -4,13 +4,14 @@ from flask_admin.actions import action
 from flask import (current_app, session, flash, redirect, url_for,
                    request, send_from_directory)
 from hashids import Hashids
-from models import Houses, Markers
 from sqlalchemy.event import listens_for
 from wtforms import TextAreaField
 import os
-import os.path as op
 
-file_path = op.join(op.dirname(__file__), 'static/upload')
+from ignite.models import Houses, Markers
+
+
+file_path = os.path.join(os.path.dirname(__file__), 'static/upload')
 try:
     os.mkdir(file_path)
 except OSError:

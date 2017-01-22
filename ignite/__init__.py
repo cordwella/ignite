@@ -1,14 +1,16 @@
 from flask import Flask, request, session, redirect, url_for, \
     abort, render_template, flash
-from hashids import Hashids
 from flask_bcrypt import Bcrypt
-from itsdangerous import URLSafeTimedSerializer
-from decorators import async, login_required
 from flask_admin import Admin
-from models import db, Houses, Markers, Users, Pages
-from admin_views import (MyAdminIndexView, QRGenView, MarkerView,
-                         UserView, HouseView, APageView)
+
 import pymysql
+from itsdangerous import URLSafeTimedSerializer
+from hashids import Hashids
+
+from ignite.decorators import async, login_required
+from ignite.models import db, Houses, Markers, Users, Pages
+from ignite.admin_views import (MyAdminIndexView, QRGenView, MarkerView,
+                                UserView, HouseView, APageView)
 
 
 pymysql.install_as_MySQLdb()

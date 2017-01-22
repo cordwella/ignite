@@ -6,3 +6,6 @@ __pycache__/
 *.pyc
 .DS_Store
 ignite/static/upload/
+*egg-info*
+build/
+dist/
