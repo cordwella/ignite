@@ -14,7 +14,8 @@ from ignite.admin_views import (MyAdminIndexView, QRGenView, MarkerView,
                                 UserView, HouseView, APageView)
 from ignite.utils import (clean_str, is_clean_username,
                           email_validate, send_email)
-
+from collections import defaultdict
+import datetime
 
 app = Flask(__name__)
 app.config.from_pyfile('application.cfg', silent=True)
@@ -263,9 +264,6 @@ def utility_processor():
         # TODO: date-timehandeling
         data = []
         if column == "user":
-            # data = User.query.filter_by(user_id=wid).order_by().limit(20)
-            # data = query_db("SELECT * FROM scan_info WHERE user_id = %s "
-            #                "order by scan_time desc limit 20", [wid])
             data = Scans.query.filter_by(user_id=wid).order_by(
                 Scans.scan_time.desc()).limit(20)
         elif column == "house":
@@ -281,66 +279,36 @@ def utility_processor():
         return render_template("recent_scans.html", scans=data)
 
     def generate_graph():
-        # TODO(amelia): Re-write all of this. I no longer understand it at all
-        return
-        """ houses = query_db("SELECT * FROM houses ORDER BY name")
-        data = []
-        graph_data = []
+        houses = Houses.query.all()
+        graph_data = defaultdict(dict)
 
-        lowest_hour = None
-        highest_hour = None
-        no_houses = 0
-
-        if(len(query_db("SELECT * FROM scans")) < 1):
+        try:
+            lowest_hour = Scans.query.order_by(
+                Scans.scan_time.asc()).first().scan_time
+        except Exception:
             return "No Scans Yet. </br>"
+        highest_hour = Scans.query.order_by(
+            Scans.scan_time.desc()).first().scan_time
+
         for house in houses:
-            # We need to know the range of the data but not all houses will
-            # have the same range.
-            current_data = query_db(
-                "SELECT sum(point_value) as points, "
-                "(hour(scan_time) + day(scan_time)*24) "
-                "as hour from scan_info where uhouse_id = %s"
-                " GROUP by hour(scan_time) order by "
-                "(hour(scan_time) + day(scan_time)*24)", [house['id']])
+            house_points = 0
+            current_hour = lowest_hour
+            print(house.name)
+            while current_hour <= highest_hour:
+                next_hour = current_hour + datetime.timedelta(hours=1)
+                scans = Scans.query.filter(
+                    Scans.scan_time.between(current_hour, next_hour)).filter(
+                    Scans.user.has(house_id=house.id)).all()
+                no_cur_hour_points = sum([scan.point_value for scan in scans])
+                house_points += no_cur_hour_points
+                graph_data[current_hour][house.name] = house_points
 
-            data.append(current_data)
-            no_houses = no_houses + 1
+                current_hour = next_hour
 
-            if len(current_data) > 0:
-                if current_data[0]['hour'] < lowest_hour:
-                    lowest_hour = current_data[0]['hour']
-
-                if current_data[len(current_data)-1]['hour'] > highest_hour:
-                    highest_hour = current_data[len(current_data)-1]['hour']
-
-        house_pos = [0, 0, 0, 0]
-
-        for i in range(highest_hour - lowest_hour + 1):
-            row = {'hour': i}
-
-            for n in range(no_houses):
-                try:
-                    prevvalue = graph_data[i-1][n]
-                except:
-                    prevvalue = 0
-
-                if house_pos[n] < len(data[n]):
-                    a_data = data[n][house_pos[n]]
-                    if int(a_data.get('hour', 0) - lowest_hour) == i:
-
-                        row[n] = a_data.get('points', 0) + prevvalue
-                        house_pos[n] = house_pos[n] + 1
-
-                    else:
-                        row[n] = prevvalue
-                else:
-                    row[n] = prevvalue
-            graph_data.append(row)
+        import operator
+        graph_data = sorted(graph_data.items(), key=operator.itemgetter(0))
         return render_template("time-graph.html", houses=houses,
                                graph_data=graph_data)
-
-        """
-        # """
 
     def get_pages():
         return Pages.query.all()

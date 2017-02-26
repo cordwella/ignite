@@ -1,44 +1,34 @@
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
     google.charts.load('current', {
-        'packages': ['line']
+        'packages': ['corechart']
     });
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
         var data = new google.visualization.DataTable();
 
-        /* So this wasn't working properly for some reason Jellicoe and Fergusson
-        were switched. This isn't a good fix however it goes live tomorrow, I will
-        try fix it for a formal source code release. */
-        data.addColumn('number', 'Hours from start');
+        data.addColumn('datetime', 'Hours from start');
         {% for house in houses %}
             data.addColumn('number', '{{house.name}}');
         {% endfor %}
 
         data.addRows([
-            {% for row in graph_data %}
-            [{{ row.hour}}
+            {% for cur_date, row in graph_data %}
+            [ new Date({{cur_date.year}}, {{cur_date.month}}, {{cur_date.day}}, {{cur_date.hour}})
                 {% for house in houses %},
-                    {{row[house.id - 1]}}
+                    {{row[house.name]}}
                 {% endfor %}],
              {% endfor %}
         ]);
+
+        //var formatter_long = new google.visualization.DateFormat({formatType: 'short'});
+        //formatter_short.format(data, 0);
 
         var options = {
             chart: {
                 title: 'Points over time',
                 subtitle: 'in hours',
-                vAxis: {
-                    viewWindow: {
-                        min: 0
-                    }
-                },
-                hAxis: {
-                    viewWindow: {
-                        min: 0
-                    }
-                }
             },
             series: {
                 {% for house in houses %}
@@ -47,6 +37,30 @@
                     },
                 {% endfor %}
             },
+            vAxis: {
+                viewWindow: {
+                    min: 0
+                },
+            },
+            hAxis: {
+                gridlines: {
+                  count: -1,
+                  units: {
+                    days: {format: ['MMM dd']},
+                  },
+                  color: 'none'
+                },
+                minorGridlines: {
+                  count: 5,
+                  units: {
+                    hours: {format: ['HH:mm', 'ha']},
+                  },
+                  color: 'white'
+                }
+
+            },
+
+            legend: {textStyle: {color: 'white'}},
             chartArea: {
                 backgroundColor: '#000000'
             },
@@ -55,9 +69,9 @@
 
         };
 
-        var chart = new google.charts.Line(document.getElementById('linechart_material'));
+        var chart = new google.visualization.LineChart(document.getElementById('linechart_material'));
 
-        chart.draw(data, google.charts.Line.convertOptions(options));
+        chart.draw(data, options);
     }
 </script>
 <div id="linechart_material" style="width: fill; height: 500px"></div>
