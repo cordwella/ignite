@@ -16,9 +16,11 @@ from ignite.utils import (clean_str, is_clean_username,
                           email_validate, send_email)
 from collections import defaultdict
 import datetime
+import os
 
 app = Flask(__name__)
-app.config.from_pyfile('application.cfg', silent=True)
+app.config.from_pyfile(os.getcwd() + '/application.cfg', silent=True)
+app.config.from_pyfile('/etc/ignite/application.cfg', silent=True)
 bcrypt = Bcrypt(app)
 
 admin = Admin(app, name="IGNITE Admin", index_view=MyAdminIndexView())

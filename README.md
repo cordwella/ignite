@@ -1,6 +1,6 @@
 # What is Ignite?
 
-Ignite is a QR code based scavanger hunt game, built by myself and Lana Cleverley during our time as
+Ignite is a QR code based scavanger hunt game, built by Amelia Cordwell and Lana Cleverley during our time as
 Wellington East Girls College technology prefects.
 
 Game play is simple, we placed a bunch of QR codes (generated from the site) around the school which students can scan. (Most of these QR codes were only worth one point however this can be set from the database and double points are awarded when the marker house and the user house are the same) This act adds points to their account, and also to their (school) house (they have to provide this information when they sign up).
@@ -13,14 +13,14 @@ This version has been updated with extra administrative features, and a number o
 
 ## Python Libraries
 Ignite is built for Python 3.
-Ignite uses the [Flask](http://flask.pocoo.org/) web framework, MariaDB as it's database (accessed with PyMySQL and sqlalchemy), as well as the pyqrcode, hashids, flask-admin, and bycrypt python libraries.
+Ignite uses the [Flask](http://flask.pocoo.org/) web framework, uses Sqlalchemy to access databases (typically using sqlite) as well as the pyqrcode, hashids, flask-admin, and bycrypt python libraries.
 
 Ignite can be started by running 'ignite-run' from the directory in which it is saved.
 
-However, it is advisable that when running Ignite as an event that an external server is used rather than the default one that flask is shipped with.
+However, it is advisable that when running Ignite as an event that an external server is used rather than the default one that flask is shipped with. (See installation below for details on setting up a webserver with it.)
 
 ## License
-The original code for Ignite is released under the MIT Open Source License.
+The code for Ignite is released under the MIT Open Source License.
 The images in the static/images directory are (c) Lana Cleverley and used with permission for running IGNITE only.  (You can use them in your event but not if you are running something else.)
 
 [Bootstrap](http://getbootstrap.com) is used here under the terms of the MIT license.
@@ -31,10 +31,33 @@ The [Grayscale theme](http://startbootstrap.com/template-overviews/grayscale/) f
 
 Feel free to run Ignite for your school, or any other organisation.
 
+There are two ways to install IGNITE, as a test server for if you just want to try it out or make modifications, or there is an included bash script to install it on a webserver with Apache.
+
 Do note however that Ignite has only been tested on Ubuntu, and any instructions to install a piece of software in the form 'apt-get' will only work on either Ubuntu or another debian based linux distro, however the rest of the commands should work in any OS that uses bash (eg Mac).
 
+### Install for running as an event
+Ignite is a flask application that can be run on any server with mod_wsgi. The basic_deploy.sh script is aimed at students who have not learned to setup a server and just want to run Ignite for their school. It sets up Ignite with mod_wsgi on Apache with Sqlite for a database.
+
+On a fairly clean Ubuntu install (this has been tested on 14.04 but should work for most versions), clone this repo into a folder of your choice (or copy your edited version), and edit the variables at the top of the basic_deploy.sh script to match your setup.
+
+```
+git clone https://github.com/cordwella/ignite.git
+cd ignite
+vim basic_deploy.sh
+```
+
+Ensure that the basic_deploy.sh script is able to be executed, and as root execute it.
+```
+chmod o+x basic_deploy.sh
+sudo ./basic_deploy.sh
+```
+
+This should install and setup everything you need to get Ignite running on a proper webserver.
+If you are having issues ensure Apache has all of the right file permissions.
+
+### Install for development or testing
 First clone this repo into a folder of your choice:
-(All of these instructions are to be followed in a terminal window on the installation computer)
+(All of these instructions are to be followed in a terminal window on the installation computer).
 
 ```
 cd /folder/of/your/choice
