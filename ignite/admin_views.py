@@ -43,7 +43,7 @@ def gen_zip(markers, in_memory=False):
         qrcode.svg(buffer, scale=5, background="white")
         housename = "nohouse"
         try:
-            housename = marker.houses.name
+            housename = marker.house.name
         except:
             pass
         zipper.writestr(str(marker.id) + "-" +
