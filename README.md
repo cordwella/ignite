@@ -36,7 +36,7 @@ There are two ways to install IGNITE, as a test server for if you just want to t
 Do note however that Ignite has only been tested on Ubuntu, and any instructions to install a piece of software in the form 'apt-get' will only work on either Ubuntu or another debian based linux distro, however the rest of the commands should work in any OS that uses bash (eg Mac).
 
 ### Install for running as an event
-Ignite is a flask application that can be run on any server with mod_wsgi. The basic_deploy.sh script is aimed at students who have not learned to setup a server and just want to run Ignite for their school. It sets up Ignite with mod_wsgi on Apache with Sqlite for a database.
+Ignite is a flask application that can be run on any server with mod_wsgi. The basic_deploy.sh script is aimed at students who have not learned to setup a server and just want to run Ignite for their school. It sets up Ignite with mod_wsgi on the Apache webserver with Sqlite for a database.
 
 On a fairly clean Ubuntu install (this has been tested on 14.04 but should work for most versions), clone this repo into a folder of your choice (or copy your edited version), and edit the variables at the top of the basic_deploy.sh script to match your setup.
 
@@ -48,7 +48,7 @@ vim basic_deploy.sh
 
 Ensure that the basic_deploy.sh script is able to be executed, and as root execute it.
 ```
-chmod o+x basic_deploy.sh
+chmod +x basic_deploy.sh
 sudo ./basic_deploy.sh
 ```
 
@@ -111,7 +111,7 @@ PORT = Optional addition port number that the server will run on (Flask defaults
 
 PLEASE NOTE: The config file is a python file so strings need to be in quote marks. More information about config files are available [here](http://flask.pocoo.org/docs/0.11/config/).
 
-Install the Ignite helper commands with 'python3 setup.py install'.
+Install the Ignite helper commands with 'python3 setup.py install' (or if you are intending to make changes to the html or python code 'python3 setup.py develop').
 
 To setup the tables in the database run 'ignite-db-setup'.
 
