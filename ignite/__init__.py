@@ -68,23 +68,25 @@ def login(nextu=None):
     if request.method == "POST":
         username = clean_str(request.form['username'])
         password = clean_str(request.form['password'])
-        if '@' in username:
-            data = Users.query.filter_by(email=username).all()
-        else:
-            data = Users.query.filter_by(uname=username).all()
+        try:
+            if '@' in username:
+                user = Users.query.filter_by(email=username).first()
+            else:
+                user = Users.query.filter_by(uname=username).first()
 
-        if len(data) == 0:
+            if bcrypt.check_password_hash(user.pwhash, password):
+                session['username'] = user.uname
+                session['user_id'] = user.id
+                flash('You were logged in')
+                if nextu:
+                    nextu = "http://" + nextu
+                    return redirect(nextu)
+                return redirect(url_for('index'))
+            else:
+                error = 'Invalid Password'
+        except:
             error = 'Invalid username'
-        elif bcrypt.check_password_hash(data[0]['pwhash'], password):
-            session['username'] = data[0]['uname']
-            session['user_id'] = data[0]['id']
-            flash('You were logged in')
-            if nextu:
-                nextu = "http://" + nextu
-                return redirect(nextu)
-            return redirect(url_for('index'))
-        else:
-            error = 'Invalid Password'
+
     return render_template('login.html', error=error, nextu=nextu)
 
 
@@ -168,6 +170,9 @@ def lost_password():
         try:
             user = Users.query.filter_by(email=email).first()
         except:
+            flash("Email Address not found")
+            return render_template('lostpass.html')
+        if not user:
             flash("Email Address not found")
             return render_template('lostpass.html')
 
