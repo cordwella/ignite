@@ -1,4 +1,6 @@
-from flask import current_app as app
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from ignite.decorators import async
 
 
@@ -38,13 +40,11 @@ def email_validate(s):
 
 @async
 def send_email(toadrr, message, subject, fromaddr=None):
-    import smtplib
-    from email.mime.multipart import MIMEMultipart
-    from email.mime.text import MIMEText
+    import ignite
+    app = ignite.app
 
     if not fromaddr:
-        with app.app_context():
-            fromaddr = app.config.get('EMAIL_ADDR')
+        fromaddr = app.config.get('EMAIL_ADDR')
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
     msg['From'] = "Ignite Admin"
