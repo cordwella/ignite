@@ -239,18 +239,15 @@ def show_house(house_id):
 @login_required
 def scan_marker(scan_id):
     hashid = Hashids(min_length=6, salt=app.config['HASHID_KEY'])
-    try:
-        marker_id = hashid.decode(scan_id)[0]
-        marker = Markers.query.filter(id=marker_id).first_or_404()
-    except:
-        abort(404)
+    marker_id = hashid.decode(scan_id)[0]
+    marker = Markers.query.filter_by(id=marker_id).first_or_404()
 
     if marker.in_current_use:
         try:
             scan = Scans(user_id=session.get('user_id'),
                          marker_id=marker.id)
             db.session.add(scan)
-            db.commit()
+            db.session.commit()
             flash("Congratulations on scanning this marker!")
 
         except IntegrityError as e:
@@ -300,7 +297,6 @@ def utility_processor():
         for house in houses:
             house_points = 0
             current_hour = lowest_hour
-            print(house.name)
             while current_hour <= highest_hour:
                 next_hour = current_hour + datetime.timedelta(hours=1)
                 scans = Scans.query.filter(

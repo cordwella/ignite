@@ -102,13 +102,22 @@ class Pages(db.Model):
 @listens_for(Scans, 'before_insert')
 def add_points(mapper, connection, target):
     """ Adds points to a user after they scan something """
-    if target.user.house_id == target.marker.house_id:
-        scan_points = target.marker.point_value * 2
+#    print(target.__dict__)
+    user_house_id, user_points = connection.execute(
+        "SELECT house_id, points from users where id = %s"
+        % target.user_id).first()
+    marker_house_id, point_value = connection.execute(
+        "SELECT house_id, point_value from markers where id = %s"
+        % target.marker_id).first()
+
+    # get user house based on user house_id and get
+    if user_house_id == marker_house_id:
+        scan_points = point_value * 2
     else:
-        scan_points = target.marker.point_value
+        scan_points = point_value
 
     target.point_value = scan_points
-    user_points = target.user.points + scan_points
+    user_points = user_points + scan_points
 
     connection.execute("UPDATE users SET points = ? WHERE id = ?",
                        (user_points, target.user_id))
@@ -117,7 +126,11 @@ def add_points(mapper, connection, target):
 @listens_for(Scans, 'before_delete')
 def remove_points(mapper, connection, target):
     """ Removes points from a user after a scan is deleted """
-    user_points = target.user.points - int(target.point_value or 1)
+    user_points = connection.execute(
+        "SELECT points from users where id = %s"
+        % target.user_id).first()[0]
+
+    user_points = user_points - int(target.point_value or 1)
     connection.execute("UPDATE users SET points = ? WHERE id = ?",
                        (user_points, target.user_id))
 

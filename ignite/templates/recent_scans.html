@@ -13,7 +13,7 @@
         <td> {{ scan.scan_time }} </td>
         <!-- TODO: Add House idenitfiers in html -->
         <td> <a class="{{ scan.marker.house }}" href="{{ url_for('show_marker', marker_id = scan.marker.id)}}">{{ scan.marker }} </a></td>
-        <td> <a class="{{ scan.user.house }}" href="{{ url_for('show_user_profile', user_id = scan.user.id)}}">{{ scan.user.username }} </td>
+        <td> <a class="{{ scan.user.house }}" href="{{ url_for('show_user_profile', user_id = scan.user.id)}}">{{ scan.user.uname }} </td>
         <td> {{ scan.point_value }} </td>
     </tr>
     {% endfor %}
