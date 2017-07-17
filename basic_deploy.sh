@@ -7,7 +7,7 @@ HASHID_HEY= # Key for encrypting/decrypting QR code urls
 			# and are accessing the QR codes from, just coping over the db
 			# isn't enough
 DB_FILE_NAME=file.db # Name of a file to create and save data in (sqlilte file)
-EMAIL_USER= # Gmail Username to send emails through
+EMAIL_USER= # Gmail Email Address to send emails through
 EMAIL_PASS= # Gmail password to send emails through
 
 ADMIN_UNAME= # Username for /adminlogin
@@ -37,7 +37,7 @@ HASHID_KEY = 'hashkey'
 ADMIN_UNAME = '$ADMIN_UNAME'
 ADMIN_PWORD = '$ADMIN_PWORD'
 EMAIL_USER = '$EMAIL_USER'
-EMAIL_PASS = '$EMAIL_PASSWORD'
+EMAIL_PASS = '$EMAIL_PASS'
 SQLALCHEMY_DATABASE_URI = "sqlite:///$IGNITE_DIR/$DB_FILE_NAME"
 PORT = 80
 DEBUG = $DEBUG
