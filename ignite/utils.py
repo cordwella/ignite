@@ -44,7 +44,7 @@ def send_email(toadrr, message, subject, fromaddr=None):
     app = ignite.app
 
     if not fromaddr:
-        fromaddr = app.config.get('EMAIL_ADDR')
+        fromaddr = app.config.get('EMAIL_USER')
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
     msg['From'] = "Ignite Admin"

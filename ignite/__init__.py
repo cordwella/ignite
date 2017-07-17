@@ -195,7 +195,7 @@ def resetpassword(serial_tag):
     ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
     try:
         email = ts.loads(serial_tag, max_age=14400)
-        user = Users.query.filter_by(email=email)
+        user = Users.query.filter_by(email=email)[0]
     except:
         abort(404)
 
@@ -205,7 +205,7 @@ def resetpassword(serial_tag):
             try:
                 user.pwhash = bcrypt.generate_password_hash(password)
                 db.session.add(user)
-                db.commit()
+                db.session.commit()
             except:
                 abort(500)
                 db.session.rollback()
