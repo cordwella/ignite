@@ -2,7 +2,7 @@ from flask_admin import AdminIndexView, BaseView, expose, form
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.actions import action
 from flask import (current_app, session, flash, redirect, url_for,
-                   request, send_from_directory, send_file)
+                   request, send_from_directory)
 from hashids import Hashids
 from wtforms import TextAreaField
 import os
@@ -16,6 +16,9 @@ try:
 except OSError:
     pass
 
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
 
 def gen_zip(markers, in_memory=False):
     import pyqrcode
@@ -26,10 +29,8 @@ def gen_zip(markers, in_memory=False):
     # This ensures that it is in the package directory rather than just cwd
     if in_memory:
         zipper_file = io.BytesIO()
-        zipper = ZipFile(zipper_file)
+        zipper = ZipFile(zipper_file, mode='w')
     else:
-        __location__ = os.path.realpath(
-            os.path.join(os.getcwd(), os.path.dirname(__file__)))
         zipper = ZipFile(os.path.join(__location__, 'markers.zip'), 'w')
 
     hashid = Hashids(min_length=6, salt=current_app.config['HASHID_KEY'])
@@ -70,30 +71,14 @@ class QRGenView(BaseView):
     def index(self):
         return self.render('admin/index.html')
 
-    @expose('/gen', methods=['POST'])
-    def generate_zip(self):
-        markers = Markers.query.all()
-        gen_zip(markers)
-        flash("Currently generating .zip in the background, "
-              "please wait a few minutes")
-        return redirect(url_for('admin.index'))
-
     @expose('/download', methods=['POST'])
     def download_zip(self):
+        markers = Markers.query.all()
+        gen_zip(markers)
 
-        try:
-            __location__ = self.get_location()
-            return send_from_directory(__location__,
-                                       'markers.zip',
-                                       as_attachment=True)
-        except:
-            flash("Please generate the .zip first")
-            return redirect(url_for('admin.index'))
-
-    def get_location(self):
-        import os
-        return os.path.realpath(
-            os.path.join(os.getcwd(), os.path.dirname(__file__)))
+        return send_from_directory(__location__,
+                                   'markers.zip',
+                                   as_attachment=True)
 
 
 class MarkerView(ModelView):
@@ -177,12 +162,12 @@ class MarkerView(ModelView):
     def action_generate_codes(self, ids):
         markers = Markers.query.filter(Markers.id.in_(ids))
 
-        zip_file = gen_zip(markers)
+        gen_zip(list(markers))
 
         flash("Codes generated")
-        return send_file(zip_file,
-                         attachment_filename="codes.zip",
-                         as_attachment=True)
+        return send_from_directory(__location__,
+                                   'markers.zip',
+                                   as_attachment=True)
 
     @expose('/mass')
     def mass_view(self):
