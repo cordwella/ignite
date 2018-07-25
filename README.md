@@ -55,6 +55,8 @@ sudo ./basic_deploy.sh
 This should install and setup everything you need to get Ignite running on a proper webserver.
 If you are having issues ensure Apache has all of the right file permissions.
 
+If you have run these commands you should not need to run anymore commands, and should at this point check to see if the server is working by accessing the url in your web browser, or by using curl.
+
 ### Install for development or testing
 First clone this repo into a folder of your choice:
 (All of these instructions are to be followed in a terminal window on the installation computer).
